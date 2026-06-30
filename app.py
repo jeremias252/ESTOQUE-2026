@@ -54,7 +54,6 @@ def auto_corrigir_hora(texto):
 # =====================================================================
 
 separadores_texto = """
-
 Henrique
 Fran
 Leonardo
@@ -83,7 +82,6 @@ TR02AW  1TOM + VM = 6
 TR03AW  2 TOM + VM = 8
 TR02A  4mm² = 5
  TR02AW  4mm = 6 
-
 """
 
 dicionario_produtos = {}
@@ -115,7 +113,9 @@ header {visibility: hidden;}
 st.markdown(esconder_menu_ingles, unsafe_allow_html=True)
 
 st.title("📦 Sistema de Estoque Móvel")
+
 st.image("https://caixatomada.com/wp-content/uploads/2020/03/b_03-1.png", width=200)
+
 aba_separador, aba_coordenador, aba_gestor = st.tabs(["📲 Separador", "📋 Coordenador", "📊 Gestor"])
 
 # ----------------- ABA 1: SEPARADOR -----------------
@@ -219,6 +219,20 @@ with aba_gestor:
     senha_gestor = st.text_input("Senha do Gestor Geral:", type="password", key="senha_gestor")
     
     if senha_gestor == "9999":
+        # NOVIDADE: SEÇÃO DE PERIGO PARA ZERAR O PROGRAMA
+        st.subheader("⚠️ Zona de Risco")
+        with st.expander("Clique aqui para ZERAR o sistema (Apagar histórico)"):
+            st.warning("Atenção: Isso vai apagar permanentemente todos os pedidos, históricos e rankings acumulados do banco de dados!")
+            confirmacao = st.checkbox("Eu entendo que essa ação não pode ser desfeita.")
+            
+            if st.button("🔥 APAGAR TODOS OS REGISTROS AGORA", type="primary", disabled=not confirmacao):
+                cursor = conn.cursor()
+                cursor.execute("DELETE FROM estoque")  # Limpa a tabela inteira
+                conn.commit()
+                st.success("💥 O banco de dados foi completamente zerado!")
+                st.rerun()
+                
+        st.markdown("---")
         st.subheader("📆 Avaliação por Período")
         
         col_d1, col_d2 = st.columns(2)
