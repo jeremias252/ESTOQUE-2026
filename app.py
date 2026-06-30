@@ -37,10 +37,11 @@ def calcular_minutos(h_inicio, h_fim):
         return 0
 
 # =====================================================================
-# ESPAÇO PARA VOCÊ COLAR SUAS LISTAS (COLE UM NOME EMBAIXO DO OUTRO)
+# ÁREA DE EDIÇÃO: SEPARADORES E PRODUTOS (COM TEMPO)
 # =====================================================================
 
 separadores_texto = """
+
 Henrique
 Fran
 Leonardo
@@ -50,51 +51,67 @@ Fabiano
 Marcello
 """
 
+# Regra: Digite o NOME DO PRODUTO = TEMPO EM MINUTOS
 produtos_texto = """
-TR03 PT
-TR03W PT
-TR03A PT
-TR03AW PT
-TR02A PT
-TR02AW PT
-TR03AW CZ COM DUO
-TR03A CZ COM DUO
-TR03A TOPO EM PEDRA CZ 2,5 mm
-TR03A TOPO EM PEDRA CZ 4 mm
-TR03A TOPO EM PEDRA BC 2,5 mm TOM DEDICADA
-TR03 2TM + 1VER CZ
-TR03 CZ 4mm
-TR03A BC 2 TOM +VM
-TR02AW PT 1TOM + VM 
-TR03AW PT 2 TOM + VM
-TR02A BC 4mm²
- TR02AW  4mm
+TR03 = 5
+TR03W = 7
+TR03A = 5
+TR03AW = 7
+TR02A = 5
+TR02AW = 6
+TR03AW  COM DUO = 10
+TR03A  COM DUO = 10
+TR03A TOPO EM PEDRA  2,5 mm = 7
+TR03A TOPO EM PEDRA  4 mm = 7
+TR03A TOPO EM PEDRA  2,5 mm TOM DEDICADA = 10
+TR03 2TM + 1VER = 7
+TR03  4mm = 7
+TR03A  2 TOM +VM = 8
+TR02AW  1TOM + VM = 6
+TR03AW  2 TOM + VM = 8
+TR02A  4mm² = 5
+ TR02AW  4mm = 6 
+
 """
 
-# Transformando os textos colados em listas para o aplicativo
+# Lógica para ler os tempos e produtos
+dicionario_produtos = {}
+for linha in produtos_texto.strip().split('\n'):
+    if '=' in linha:
+        nome, tempo = linha.split('=')
+        dicionario_produtos[nome.strip()] = float(tempo.strip())
+    elif linha.strip():
+        dicionario_produtos[linha.strip()] = 0.0 # Caso você esqueça de colocar o tempo
+
 lista_separadores = ["Selecione..."] + [s.strip() for s in separadores_texto.strip().split('\n') if s.strip()]
-lista_produtos = ["Selecione..."] + [p.strip() for p in produtos_texto.strip().split('\n') if p.strip()]
+lista_produtos = ["Selecione..."] + list(dicionario_produtos.keys())
 
 # =====================================================================
-# FIM DA ÁREA DE EDIÇÃO DAS LISTAS
+# FIM DA ÁREA DE EDIÇÃO
 # =====================================================================
 
 
 # 3. INTERFACE DO USUÁRIO (STREAMLIT)
-st.set_page_config(page_title="Controle de Estoque V2", page_icon="📦", layout="centered")
+st.set_page_config(page_title="Controle de Estoque V3", page_icon="📦", layout="centered")
 
-st.title("📦 Sistema de Estoque Móvel - V2")
+st.title("📦 Sistema de Estoque Móvel - V3")
 
 aba_separador, aba_gestor = st.tabs(["📲 Área do Separador", "📊 Painel do Gestor (Você)"])
 
 # ----------------- ABA 1: SEPARADOR -----------------
 with aba_separador:
     st.header("Registrar Novo Estoque")
-    st.write("Preencha os dados assim que finalizar a atividade:")
     
     nome = st.selectbox("Seu Nome:", lista_separadores)
     produto = st.selectbox("Modelo do Produto:", lista_produtos)
     quantidade = st.number_input("Quantidade Produzida:", min_value=1, step=1)
+    
+    # NOVIDADE: Mostra a meta de tempo na tela do funcionário na hora!
+    if produto != "Selecione..." and produto in dicionario_produtos:
+        tempo_unidade = dicionario_produtos[produto]
+        if tempo_unidade > 0:
+            tempo_meta = tempo_unidade * quantidade
+            st.info(f"🎯 **Meta:** {tempo_unidade} min por unidade. Tempo esperado total: **{tempo_meta} minutos**.")
     
     col1, col2 = st.columns(2)
     with col1:
@@ -146,38 +163,31 @@ with aba_gestor:
         df_aprovados = pd.read_sql_query("SELECT * FROM estoque WHERE status = 'Aprovado'", conn)
         
         if not df_aprovados.empty:
-            df_aprovados['Minutos Gastos'] = df_aprovados.apply(lambda r: calcular_minutos(r['hora_inicio'], r['hora_fim']), axis=1)
+            df_aprovados['Minutos Gastos Reais'] = df_aprovados.apply(lambda r: calcular_minutos(r['hora_inicio'], r['hora_fim']), axis=1)
             
-            st.subheader("🏆 Ranking de Produtividade dos Separadores")
+            # Puxando a meta de tempo para o relatório do gestor
+            df_aprovados['Tempo Padrão Unidade'] = df_aprovados['produto'].map(dicionario_produtos).fillna(0)
+            df_aprovados['Meta de Tempo Total'] = df_aprovados['Tempo Padrão Unidade'] * df_aprovados['quantidade']
+            
+            st.subheader("🏆 Ranking de Eficiência dos Separadores")
+            st.write("Quem produz mais rápido em relação à meta padrão da empresa:")
+            
             ranking_func = df_aprovados.groupby('separador').agg(
                 Total_Produtos=('quantidade', 'sum'),
-                Tempo_Total_Minutos=('Minutos Gastos', 'sum')
+                Meta_Tempo=('Meta de Tempo Total', 'sum'),
+                Tempo_Gasto=('Minutos Gastos Reais', 'sum')
             ).reset_index()
-            ranking_func['Itens por Minuto'] = ranking_func['Total_Produtos'] / ranking_func['Tempo_Total_Minutos']
+            
+            # Cálculo de Eficiência (Se fez em menos tempo que a meta, fica acima de 100%)
+            ranking_func['Eficiência'] = (ranking_func['Meta_Tempo'] / ranking_func['Tempo_Gasto']) * 100
+            ranking_func['Eficiência'] = ranking_func['Eficiência'].fillna(0).map(lambda x: f"{x:.1f}%")
+            
+            ranking_func['Tempo_Gasto'] = ranking_func['Tempo_Gasto'].map(lambda x: f"{int(x)} min")
+            ranking_func['Meta_Tempo'] = ranking_func['Meta_Tempo'].map(lambda x: f"{int(x)} min")
+            
             ranking_func = ranking_func.sort_values(by='Total_Produtos', ascending=False)
-            ranking_func.columns = ['Separador', 'Produtos Feitos', 'Tempo Total (Minutos)', 'Velocidade (Itens/Min)']
+            ranking_func.columns = ['Separador', 'Produtos Feitos', 'Tempo Ideal (Meta)', 'Tempo Real Gasto', 'Eficiência (%)']
             st.dataframe(ranking_func, hide_index=True, use_container_width=True)
-            
-            st.markdown("---")
-            
-            st.subheader("⏱️ Indicador de Tempo por Modelo de Produto")
-            st.write("Exibe quanto tempo cada produto leva em média para ser feito:")
-            
-            ranking_prod = df_aprovados.groupby('produto').agg(
-                Qtd_Total=('quantidade', 'sum'),
-                Tempo_Total_Min=('Minutos Gastos', 'sum')
-            ).reset_index()
-            
-            ranking_prod['Tempo Médio por Unidade'] = ranking_prod['Tempo_Total_Min'] / ranking_prod['Qtd_Total']
-            ranking_prod = ranking_prod.sort_values(by='Tempo Médio por Unidade', ascending=True)
-            
-            ranking_prod['Tempo Médio por Unidade'] = ranking_prod['Tempo Médio por Unidade'].map(lambda x: f"{x:.2f} minutos")
-            ranking_prod['Tempo Total_Formatado'] = ranking_prod['Tempo_Total_Min'].map(lambda x: f"{int(x)} min")
-            
-            ranking_prod_exibicao = ranking_prod[['produto', 'Qtd_Total', 'Tempo Total_Formatado', 'Tempo Médio por Unidade']]
-            ranking_prod_exibicao.columns = ['Modelo do Produto', 'Total Produzido (un)', 'Tempo Total Gasto', 'Tempo Médio por Unidade']
-            
-            st.dataframe(ranking_prod_exibicao, hide_index=True, use_container_width=True)
             
             st.markdown("---")
             
