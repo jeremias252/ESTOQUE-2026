@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import sqlite3
-from datetime import datetime
+from datetime import datetime, date
 
 # 1. CONFIGURAÇÃO DO BANCO DE DADOS
 def conectar_banco():
@@ -49,6 +49,7 @@ Patrick
 Sérgio
 Fabiano
 Marcello
+
 """
 
 # Regra: Digite o NOME DO PRODUTO = TEMPO EM MINUTOS
@@ -81,7 +82,7 @@ for linha in produtos_texto.strip().split('\n'):
         nome, tempo = linha.split('=')
         dicionario_produtos[nome.strip()] = float(tempo.strip())
     elif linha.strip():
-        dicionario_produtos[linha.strip()] = 0.0 # Caso você esqueça de colocar o tempo
+        dicionario_produtos[linha.strip()] = 0.0
 
 lista_separadores = ["Selecione..."] + [s.strip() for s in separadores_texto.strip().split('\n') if s.strip()]
 lista_produtos = ["Selecione..."] + list(dicionario_produtos.keys())
@@ -92,9 +93,9 @@ lista_produtos = ["Selecione..."] + list(dicionario_produtos.keys())
 
 
 # 3. INTERFACE DO USUÁRIO (STREAMLIT)
-st.set_page_config(page_title="Controle de Estoque V3", page_icon="📦", layout="centered")
+st.set_page_config(page_title="Controle de Estoque V4", page_icon="📦", layout="centered")
 
-st.title("📦 Sistema de Estoque Móvel - V3")
+st.title("📦 Sistema de Estoque Móvel - V4")
 
 aba_separador, aba_gestor = st.tabs(["📲 Área do Separador", "📊 Painel do Gestor (Você)"])
 
@@ -106,11 +107,10 @@ with aba_separador:
     produto = st.selectbox("Modelo do Produto:", lista_produtos)
     quantidade = st.number_input("Quantidade Produzida:", min_value=1, step=1)
     
-    # NOVIDADE: Mostra a meta de tempo na tela do funcionário na hora!
     if produto != "Selecione..." and produto in dicionario_produtos:
         tempo_unidade = dicionario_produtos[produto]
         if tempo_unidade > 0:
-            tempo_meta = tempo_unidade * quantidade
+            tempo_meta = tempo_unidade * grandmother_quantity if 'grandmother_quantity' in locals() else tempo_unidade * quantidade
             st.info(f"🎯 **Meta:** {tempo_unidade} min por unidade. Tempo esperado total: **{tempo_meta} minutos**.")
     
     col1, col2 = st.columns(2)
@@ -139,6 +139,7 @@ with aba_gestor:
     senha = st.text_input("Digite sua senha de administrador:", type="password")
     
     if senha == "1234":
+        # 1. PEDIDOS PENDENTES (Mostra todos independente da data, para você não esquecer de aprovar nada)
         st.subheader("📋 Pedidos Aguardando sua Conferência")
         
         df_pendentes = pd.read_sql_query("SELECT * FROM estoque WHERE status = 'Pendente'", conn)
@@ -146,7 +147,7 @@ with aba_gestor:
         if df_pendentes.empty:
             st.info("Não há nenhum registro aguardando aprovação no momento.")
         else:
-            for index, row in df_pendentes.iterrows():
+            for index, row in df_pendentes.endswith if 'endswith' in dir(row) else df_pendentes.iterrows():
                 with st.expander(f"🔔 {row['separador']} - {row['produto']} ({row['quantidade']} un)"):
                     st.write(f"**Horário:** {row['hora_inicio']} até {row['hora_fim']}")
                     st.write(f"**Data:** {row['data']}")
@@ -160,44 +161,56 @@ with aba_gestor:
 
         st.markdown("---")
         
-        df_aprovados = pd.read_sql_query("SELECT * FROM estoque WHERE status = 'Aprovado'", conn)
+        # 2. FILTRO POR DATA DO RELATÓRIO
+        st.subheader("📅 Filtrar Relatórios por Data")
+        data_selecionada = st.date_input("Escolha o dia que deseja analisar:", value=date.today())
+        data_formatada_str = data_selecionada.strftime("%d/%m/%Y")
         
-        if not df_aprovados.empty:
-            df_aprovados['Minutos Gastos Reais'] = df_aprovados.apply(lambda r: calcular_minutos(r['hora_inicio'], r['hora_fim']), axis=1)
+        # Buscar os aprovados do banco
+        df_todos_aprovados = pd.read_sql_query("SELECT * FROM estoque WHERE status = 'Aprovado'", conn)
+        
+        if not df_todos_aprovados.empty:
+            # Filtrar o DataFrame para mostrar apenas o dia selecionado no calendário
+            df_aprovados = df_todos_aprovados[df_todos_aprovados['data'] == data_formatada_str]
             
-            # Puxando a meta de tempo para o relatório do gestor
-            df_aprovados['Tempo Padrão Unidade'] = df_aprovados['produto'].map(dicionario_produtos).fillna(0)
-            df_aprovados['Meta de Tempo Total'] = df_aprovados['Tempo Padrão Unidade'] * df_aprovados['quantidade']
-            
-            st.subheader("🏆 Ranking de Eficiência dos Separadores")
-            st.write("Quem produz mais rápido em relação à meta padrão da empresa:")
-            
-            ranking_func = df_aprovados.groupby('separador').agg(
-                Total_Produtos=('quantidade', 'sum'),
-                Meta_Tempo=('Meta de Tempo Total', 'sum'),
-                Tempo_Gasto=('Minutos Gastos Reais', 'sum')
-            ).reset_index()
-            
-            # Cálculo de Eficiência (Se fez em menos tempo que a meta, fica acima de 100%)
-            ranking_func['Eficiência'] = (ranking_func['Meta_Tempo'] / ranking_func['Tempo_Gasto']) * 100
-            ranking_func['Eficiência'] = ranking_func['Eficiência'].fillna(0).map(lambda x: f"{x:.1f}%")
-            
-            ranking_func['Tempo_Gasto'] = ranking_func['Tempo_Gasto'].map(lambda x: f"{int(x)} min")
-            ranking_func['Meta_Tempo'] = ranking_func['Meta_Tempo'].map(lambda x: f"{int(x)} min")
-            
-            ranking_func = ranking_func.sort_values(by='Total_Produtos', ascending=False)
-            ranking_func.columns = ['Separador', 'Produtos Feitos', 'Tempo Ideal (Meta)', 'Tempo Real Gasto', 'Eficiência (%)']
-            st.dataframe(ranking_func, hide_index=True, use_container_width=True)
-            
-            st.markdown("---")
-            
-            st.subheader("🔍 Histórico Detalhado por Produto")
-            produto_filtro = st.selectbox("Escolha o produto para auditar:", ["Todos"] + list(df_aprovados['produto'].unique()))
-            if produto_filtro != "Todos":
-                df_filtrado = df_aprovados[df_aprovados['produto'] == produto_filtro]
-                st.dataframe(df_filtrado[['separador', 'quantidade', 'hora_inicio', 'hora_fim', 'data']], hide_index=True)
+            if not df_aprovados.empty:
+                df_aprovados['Minutos Gastos Reais'] = df_aprovados.apply(lambda r: calcular_minutos(r['hora_inicio'], r['hora_fim']), axis=1)
+                df_aprovados['Tempo Padrão Unidade'] = df_aprovados['produto'].map(dicionario_produtos).fillna(0)
+                df_aprovados['Meta de Tempo Total'] = df_aprovados['Tempo Padrão Unidade'] * df_aprovados['quantidade']
+                
+                # RANKING DE EFICIÊNCIA DO DIA DO SEPARADOR
+                st.subheader(f"🏆 Ranking de Eficiência - Dia {data_formatada_str}")
+                
+                ranking_func = df_aprovados.groupby('separador').agg(
+                    Total_Produtos=('quantidade', 'sum'),
+                    Meta_Tempo=('Meta de Tempo Total', 'sum'),
+                    Tempo_Gasto=('Minutos Gastos Reais', 'sum')
+                ).reset_index()
+                
+                ranking_func['Eficiência'] = (ranking_func['Meta_Tempo'] / ranking_func['Tempo_Gasto']) * 100
+                ranking_func['Eficiência'] = ranking_func['Eficiência'].fillna(0).map(lambda x: f"{x:.1f}%")
+                
+                ranking_func['Tempo_Gasto'] = ranking_func['Tempo_Gasto'].map(lambda x: f"{int(x)} min")
+                ranking_func['Meta_Tempo'] = ranking_func['Meta_Tempo'].map(lambda x: f"{int(x)} min")
+                
+                ranking_func = ranking_func.sort_values(by='Total_Produtos', ascending=False)
+                ranking_func.columns = ['Separador', 'Produtos Feitos', 'Tempo Ideal (Meta)', 'Tempo Real Gasto', 'Eficiência (%)']
+                st.dataframe(ranking_func, hide_index=True, use_container_width=True)
+                
+                st.markdown("---")
+                
+                # DETALHADO POR PRODUTO DO DIA
+                st.subheader("🔍 Consultar Histórico de Lançamentos do Dia")
+                produto_filtro = st.selectbox("Escolha o produto para auditar:", ["Todos"] + list(df_aprovados['produto'].unique()))
+                if produto_filtro != "Todos":
+                    df_filtrado = df_aprovados[df_aprovados['produto'] == produto_filtro]
+                    st.dataframe(df_filtrado[['separador', 'quantidade', 'hora_inicio', 'hora_fim']], hide_index=True, use_container_width=True)
+                else:
+                    st.dataframe(df_aprovados[['separador', 'produto', 'quantidade', 'hora_inicio', 'hora_fim']], hide_index=True, use_container_width=True)
+            else:
+                st.warning(f"Nenhum registro de estoque foi aprovado no dia {data_formatada_str}.")
         else:
-            st.info("Nenhum registro foi aprovado ainda hoje para gerar as análises.")
+            st.info("Nenhum registro foi aprovado no sistema até o momento.")
             
     elif senha != "":
         st.error("Senha incorreta.")
