@@ -30,18 +30,61 @@ def calcular_minutos(h_inicio, h_fim):
         formato = "%H:%M"
         inicio = datetime.strptime(h_inicio, formato)
         fim = datetime.strptime(h_fim, formato)
-        if fim < inicio: # Caso mude de dia à meia-noite
+        if fim < inicio:
             return ((fim - inicio).seconds / 60) + 1440
         return (fim - inicio).seconds / 60
     except:
         return 0
 
+# =====================================================================
+# ESPAÇO PARA VOCÊ COLAR SUAS LISTAS (COLE UM NOME EMBAIXO DO OUTRO)
+# =====================================================================
+
+separadores_texto = """
+Henrique
+Fran
+Leonardo
+Patrick
+Sérgio
+Fabiano
+Marcello
+"""
+
+produtos_texto = """
+TR03 PT
+TR03W PT
+TR03A PT
+TR03AW PT
+TR02A PT
+TR02AW PT
+TR03AW CZ COM DUO
+TR03A CZ COM DUO
+TR03A TOPO EM PEDRA CZ 2,5 mm
+TR03A TOPO EM PEDRA CZ 4 mm
+TR03A TOPO EM PEDRA BC 2,5 mm TOM DEDICADA
+TR03 2TM + 1VER CZ
+TR03 CZ 4mm
+TR03A BC 2 TOM +VM
+TR02AW PT 1TOM + VM 
+TR03AW PT 2 TOM + VM
+TR02A BC 4mm²
+ TR02AW  4mm
+"""
+
+# Transformando os textos colados em listas para o aplicativo
+lista_separadores = ["Selecione..."] + [s.strip() for s in separadores_texto.strip().split('\n') if s.strip()]
+lista_produtos = ["Selecione..."] + [p.strip() for p in produtos_texto.strip().split('\n') if p.strip()]
+
+# =====================================================================
+# FIM DA ÁREA DE EDIÇÃO DAS LISTAS
+# =====================================================================
+
+
 # 3. INTERFACE DO USUÁRIO (STREAMLIT)
-st.set_page_config(page_title="Controle de Estoque", page_icon="📦", layout="centered")
+st.set_page_config(page_title="Controle de Estoque V2", page_icon="📦", layout="centered")
 
-st.title("📦 Sistema de Estoque Móvel")
+st.title("📦 Sistema de Estoque Móvel - V2")
 
-# Criando as abas para separar quem usa
 aba_separador, aba_gestor = st.tabs(["📲 Área do Separador", "📊 Painel do Gestor (Você)"])
 
 # ----------------- ABA 1: SEPARADOR -----------------
@@ -49,10 +92,8 @@ with aba_separador:
     st.header("Registrar Novo Estoque")
     st.write("Preencha os dados assim que finalizar a atividade:")
     
-    lista_separadores = ["Selecione...", "Henrique", "Leonardo", "Fran", "Patrick", "Sérgio", "Marcello", "Fabiano"]
-    
     nome = st.selectbox("Seu Nome:", lista_separadores)
-    produto = st.text_input("Nome/Código do Produto:").strip().upper()
+    produto = st.selectbox("Modelo do Produto:", lista_produtos)
     quantidade = st.number_input("Quantidade Produzida:", min_value=1, step=1)
     
     col1, col2 = st.columns(2)
@@ -62,7 +103,7 @@ with aba_separador:
         hora_fim = st.text_input("Horário de Término (Ex: 14:45):", placeholder="HH:MM")
         
     if st.button("🚀 Enviar para Conferência", use_container_width=True):
-        if nome == "Selecione..." or not produto or not hora_inicio or not hora_fim:
+        if nome == "Selecione..." or produto == "Selecione..." or not hora_inicio or not hora_fim:
             st.error("❌ Por favor, preencha todos os campos obrigatórios!")
         else:
             data_hoje = datetime.now().strftime("%d/%m/%Y")
@@ -78,13 +119,11 @@ with aba_separador:
 with aba_gestor:
     st.header("Painel de Controle e Filtros")
     
-    # Sistema simples de senha para os separadores não mexerem no seu painel
     senha = st.text_input("Digite sua senha de administrador:", type="password")
     
-    if senha == "Jere@160324": # Altere para a senha que desejar
+    if senha == "1234":
         st.subheader("📋 Pedidos Aguardando sua Conferência")
         
-        # Buscar pendentes
         df_pendentes = pd.read_sql_query("SELECT * FROM estoque WHERE status = 'Pendente'", conn)
         
         if df_pendentes.empty:
@@ -103,37 +142,52 @@ with aba_gestor:
                         st.rerun()
 
         st.markdown("---")
-        st.subheader("🏆 Filtro & Ranking de Produtividade (Aprovados)")
         
-        # Buscar apenas os que você deu OK
         df_aprovados = pd.read_sql_query("SELECT * FROM estoque WHERE status = 'Aprovado'", conn)
         
         if not df_aprovados.empty:
-            # Calcular o tempo de cada registro
             df_aprovados['Minutos Gastos'] = df_aprovados.apply(lambda r: calcular_minutos(r['hora_inicio'], r['hora_fim']), axis=1)
             
-            # Agrupar dados por Separador
-            ranking = df_aprovados.groupby('separador').agg(
+            st.subheader("🏆 Ranking de Produtividade dos Separadores")
+            ranking_func = df_aprovados.groupby('separador').agg(
                 Total_Produtos=('quantidade', 'sum'),
                 Tempo_Total_Minutos=('Minutos Gastos', 'sum')
             ).reset_index()
+            ranking_func['Itens por Minuto'] = ranking_func['Total_Produtos'] / ranking_func['Tempo_Total_Minutos']
+            ranking_func = ranking_func.sort_values(by='Total_Produtos', ascending=False)
+            ranking_func.columns = ['Separador', 'Produtos Feitos', 'Tempo Total (Minutos)', 'Velocidade (Itens/Min)']
+            st.dataframe(ranking_func, hide_index=True, use_container_width=True)
             
-            # Calcular velocidade (itens por minuto)
-            ranking['Itens por Minuto'] = ranking['Total_Produtos'] / ranking['Tempo_Total_Minutos']
-            ranking = ranking.sort_values(by='Total_Produtos', ascending=False)
+            st.markdown("---")
             
-            # Formatar tabela para exibição amigável
-            ranking.columns = ['Separador', 'Produtos Feitos', 'Tempo Total (Minutos)', 'Velocidade (Itens/Min)']
-            st.dataframe(ranking, hide_index=True, use_container_width=True)
+            st.subheader("⏱️ Indicador de Tempo por Modelo de Produto")
+            st.write("Exibe quanto tempo cada produto leva em média para ser feito:")
             
-            # Filtro por Produto
-            st.subheader("🔍 Filtrar por Produto")
+            ranking_prod = df_aprovados.groupby('produto').agg(
+                Qtd_Total=('quantidade', 'sum'),
+                Tempo_Total_Min=('Minutos Gastos', 'sum')
+            ).reset_index()
+            
+            ranking_prod['Tempo Médio por Unidade'] = ranking_prod['Tempo_Total_Min'] / ranking_prod['Qtd_Total']
+            ranking_prod = ranking_prod.sort_values(by='Tempo Médio por Unidade', ascending=True)
+            
+            ranking_prod['Tempo Médio por Unidade'] = ranking_prod['Tempo Médio por Unidade'].map(lambda x: f"{x:.2f} minutos")
+            ranking_prod['Tempo Total_Formatado'] = ranking_prod['Tempo_Total_Min'].map(lambda x: f"{int(x)} min")
+            
+            ranking_prod_exibicao = ranking_prod[['produto', 'Qtd_Total', 'Tempo Total_Formatado', 'Tempo Médio por Unidade']]
+            ranking_prod_exibicao.columns = ['Modelo do Produto', 'Total Produzido (un)', 'Tempo Total Gasto', 'Tempo Médio por Unidade']
+            
+            st.dataframe(ranking_prod_exibicao, hide_index=True, use_container_width=True)
+            
+            st.markdown("---")
+            
+            st.subheader("🔍 Histórico Detalhado por Produto")
             produto_filtro = st.selectbox("Escolha o produto para auditar:", ["Todos"] + list(df_aprovados['produto'].unique()))
             if produto_filtro != "Todos":
                 df_filtrado = df_aprovados[df_aprovados['produto'] == produto_filtro]
                 st.dataframe(df_filtrado[['separador', 'quantidade', 'hora_inicio', 'hora_fim', 'data']], hide_index=True)
         else:
-            st.info("Nenhum registro foi aprovado ainda hoje para gerar o ranking.")
+            st.info("Nenhum registro foi aprovado ainda hoje para gerar as análises.")
             
     elif senha != "":
         st.error("Senha incorreta.")
