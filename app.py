@@ -62,7 +62,6 @@ Patrick
 Sérgio
 Fabiano
 Marcello
-
 """
 
 produtos_texto = """
@@ -104,9 +103,8 @@ lista_produtos = ["Selecione..."] + list(dicionario_produtos.keys())
 
 
 # 3. INTERFACE DO USUÁRIO (STREAMLIT)
-st.set_page_config(page_title="Controle de Estoque V8", page_icon="📦", layout="centered")
+st.set_page_config(page_title="Controle de Estoque", page_icon="📦", layout="centered")
 
-# TRUQUE PARA ESCONDER OS MENUS EM INGLÊS DO STREAMLIT
 esconder_menu_ingles = """
 <style>
 #MainMenu {visibility: hidden;}
@@ -184,7 +182,6 @@ with aba_coordenador:
         st.markdown("---")
         st.subheader("📅 Desempenho Diário")
         
-        # O CALENDÁRIO AGORA É FORÇADO NO FORMATO BRASILEIRO (DD/MM/YYYY)
         data_selecionada = st.date_input("Escolha o dia:", value=date.today(), key="data_coord", format="DD/MM/YYYY")
         data_str = data_selecionada.strftime("%d/%m/%Y")
         
@@ -239,4 +236,33 @@ with aba_gestor:
             if not df_filtrado.empty:
                 df_filtrado['Minutos Gastos Reais'] = df_filtrado.apply(lambda r: calcular_minutos(r['hora_inicio'], r['hora_fim']), axis=1)
                 df_filtrado['Tempo Padrão Unidade'] = df_filtrado['produto'].map(dicionario_produtos).fillna(0)
-                df_filtrado['Meta de Tempo Total'] = df_filtrado['
+                df_filtrado['Meta de Tempo Total'] = df_filtrado['Tempo Padrão Unidade'] * df_filtrado['quantidade']
+                
+                st.markdown("---")
+                total_pecas = df_filtrado['quantidade'].sum()
+                horas_trabalhadas = int(df_filtrado['Minutos Gastos Reais'].sum() / 60)
+                st.success(f"📦 Total de Produtos Feitos: **{total_pecas}** | ⏱️ Horas Produtivas Focadas: **{horas_trabalhadas}h**")
+                
+                st.subheader("🏆 Ranking Acumulado do Período")
+                ranking_gestor = df_filtrado.groupby('separador').agg(
+                    Total_Produtos=('quantidade', 'sum'),
+                    Meta_Tempo=('Meta de Tempo Total', 'sum'),
+                    Tempo_Gasto=('Minutos Gastos Reais', 'sum')
+                ).reset_index()
+                
+                ranking_gestor['Eficiência Média'] = (ranking_gestor['Meta_Tempo'] / ranking_gestor['Tempo_Gasto']) * 100
+                ranking_gestor['Eficiência Média'] = ranking_gestor['Eficiência Média'].fillna(0).map(lambda x: f"{x:.1f}%")
+                ranking_gestor['Tempo_Gasto'] = ranking_gestor['Tempo_Gasto'].map(lambda x: f"{int(x/60)}h {int(x%60)}m")
+                
+                ranking_gestor = ranking_gestor.sort_values(by='Total_Produtos', ascending=False)
+                ranking_gestor.columns = ['Separador', 'Soma de Produtos', 'Meta Total', 'Tempo Total Gasto', 'Eficiência Média']
+                
+                st.dataframe(ranking_gestor[['Separador', 'Soma de Produtos', 'Tempo Total Gasto', 'Eficiência Média']], hide_index=True, use_container_width=True)
+                
+            else:
+                st.warning("Não há nenhum dado aprovado neste intervalo de datas selecionado.")
+        else:
+            st.info("Nenhum registro foi aprovado no sistema ainda.")
+            
+    elif senha_gestor != "":
+        st.error("Senha de gestor incorreta.")
