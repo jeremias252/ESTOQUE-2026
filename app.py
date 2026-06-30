@@ -49,7 +49,7 @@ with aba_separador:
     st.header("Registrar Novo Estoque")
     st.write("Preencha os dados assim que finalizar a atividade:")
     
-    lista_separadores = ["Selecione...", "Separador 1", "Separador 2", "Separador 3", "Separador 4", "Separador 5", "Separador 6", "Separador 7"]
+    lista_separadores = ["Selecione...", "Henrique", "Leonardo", "Fran", "Patrick", "Sérgio", "Marcello", "Fabiano"]
     
     nome = st.selectbox("Seu Nome:", lista_separadores)
     produto = st.text_input("Nome/Código do Produto:").strip().upper()
@@ -81,7 +81,7 @@ with aba_gestor:
     # Sistema simples de senha para os separadores não mexerem no seu painel
     senha = st.text_input("Digite sua senha de administrador:", type="password")
     
-    if senha == "1234": # Altere para a senha que desejar
+    if senha == "Jere@160324": # Altere para a senha que desejar
         st.subheader("📋 Pedidos Aguardando sua Conferência")
         
         # Buscar pendentes
