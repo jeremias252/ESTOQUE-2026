@@ -38,7 +38,7 @@ def calcular_minutos(h_inicio, h_fim):
         return 0
 
 def auto_corrigir_hora(texto):
-    numeros = re.sub(r'\D', '', texto)
+    numeros = re.sub(r'\D', '', text) if texto else ''
     if not numeros: return None
     if len(numeros) == 1: numeros = f"0{numeros}00"
     elif len(numeros) == 2: numeros = f"{numeros}00"
@@ -82,6 +82,7 @@ TR02AW  1TOM + VM = 6
 TR03AW  2 TOM + VM = 8
 TR02A  4mm² = 5
  TR02AW  4mm = 6 
+
 """
 
 dicionario_produtos = {}
@@ -219,15 +220,26 @@ with aba_gestor:
     senha_gestor = st.text_input("Senha do Gestor Geral:", type="password", key="senha_gestor")
     
     if senha_gestor == "9999":
-        # NOVIDADE: SEÇÃO DE PERIGO PARA ZERAR O PROGRAMA
         st.subheader("⚠️ Zona de Risco")
-        with st.expander("Clique aqui para ZERAR o sistema (Apagar histórico)"):
-            st.warning("Atenção: Isso vai apagar permanentemente todos os pedidos, históricos e rankings acumulados do banco de dados!")
-            confirmacao = st.checkbox("Eu entendo que essa ação não pode ser desfeita.")
+        with st.expander("Clique aqui para opções de EXCLUSÃO"):
+            st.markdown("### 👤 Opção 1: Excluir um Separador Específico")
+            separador_para_deletar = st.selectbox("Escolha o separador para limpar o histórico:", lista_separadores, key="del_sep")
+            confirmacao_individual = st.checkbox(f"Confirmo que desejo apagar APENAS o histórico de {separador_para_deletar}.", key="chk_ind")
             
-            if st.button("🔥 APAGAR TODOS OS REGISTROS AGORA", type="primary", disabled=not confirmacao):
+            if st.button("🗑️ APAGAR HISTÓRICO DELE(A)", type="primary", disabled=not confirmacao_individual or separador_para_deletar == "Selecione..."):
                 cursor = conn.cursor()
-                cursor.execute("DELETE FROM estoque")  # Limpa a tabela inteira
+                cursor.execute("DELETE FROM estoque WHERE separador = ?", (separador_para_deletar,))
+                conn.commit()
+                st.success(f"💥 Todo o histórico de '{separador_para_deletar}' foi apagado!")
+                st.rerun()
+                
+            st.markdown("---")
+            st.markdown("### 🚨 Opção 2: Zerar o Banco de Dados Inteiro")
+            confirmacao_total = st.checkbox("Eu entendo que essa ação vai zerar TODO o sistema e não pode ser desfeita.", key="chk_tot")
+            
+            if st.button("🔥 APAGAR TODOS OS REGISTROS DO SISTEMA", type="primary", disabled=not confirmacao_total):
+                cursor = conn.cursor()
+                cursor.execute("DELETE FROM estoque")
                 conn.commit()
                 st.success("💥 O banco de dados foi completamente zerado!")
                 st.rerun()
