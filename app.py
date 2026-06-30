@@ -115,7 +115,7 @@ header {visibility: hidden;}
 st.markdown(esconder_menu_ingles, unsafe_allow_html=True)
 
 st.title("📦 Sistema de Estoque Móvel")
-t.image("https://caixatomada.com/wp-content/uploads/2020/03/b_03-1.png", width=200)
+st.image("https://caixatomada.com/wp-content/uploads/2020/03/b_03-1.png", width=200)
 aba_separador, aba_coordenador, aba_gestor = st.tabs(["📲 Separador", "📋 Coordenador", "📊 Gestor"])
 
 # ----------------- ABA 1: SEPARADOR -----------------
