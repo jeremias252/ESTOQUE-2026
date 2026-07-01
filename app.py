@@ -38,7 +38,7 @@ def calcular_minutos(h_inicio, h_fim):
         return 0
 
 def auto_corrigir_hora(texto):
-    numeros = re.sub(r'\D', '', text) if texto else ''
+    numeros = re.sub(r'\D', '', texto) if texto else ''
     if not numeros: return None
     if len(numeros) == 1: numeros = f"0{numeros}00"
     elif len(numeros) == 2: numeros = f"{numeros}00"
