@@ -135,7 +135,7 @@ with aba_separador:
         if not df_podio_est.empty:
             ranking_top3 = df_podio_est.groupby('separador')['quantidade'].sum().reset_index().sort_values('quantidade', ascending=False).head(3)
             if len(ranking_top3) > 0:
-                st.markdown("### 🏆 Top 3 de Production (Hoje)")
+                st.markdown("### 🏆 Top 3 de Produção (Hoje)")
                 cols = st.columns(3)
                 medalhas = ["🥇", "🥈", "🥉"]
                 for i, (idx, row_podio) in enumerate(ranking_top3.iterrows()):
@@ -224,7 +224,6 @@ with aba_coordenador:
         st.markdown("---")
         st.subheader("📅 Avaliação e Rankings por Período")
         
-        # MELHORIA: Filtro por período também para o Coordenador
         col_c1, col_c2 = st.columns(2)
         with col_c1:
             data_inicio_coord = st.date_input("Data de Início:", value=date.today(), key="d_ini_coord", format="DD/MM/YYYY")
@@ -332,11 +331,6 @@ with aba_gestor:
                     mime="text/csv",
                     type="primary"
                 )
-                
-                if not df_producao.empty:
-                    st.markdown("#### 📊 Gráfico: Quantidade de Produtos por Separador")
-                    grafico_dados = df_producao.groupby('separador')['quantidade'].sum().reset_index()
-                    st.bar_chart(data=grafico_dados.set_index('separador'))
                 
                 st.subheader("🏆 1. Ranking de Produtividade no Estoque")
                 if not df_producao.empty:
