@@ -54,21 +54,35 @@ def auto_corrigir_hora(texto):
 # =====================================================================
 
 separadores_texto = """
-João Silva
-Maria Souza
-Carlos
-Ana
-Pedro
-Lucas
-Rafael
+Henrique
+Fran
+Leonardo
+Patrick
+Sérgio
+Fabiano
+Marcello
 """
 
 produtos_texto = """
-Modelo Produto A = 5
-Modelo Produto B = 10
-Modelo Produto C = 2.5
-Caixa Organizadora = 8
-Pino Injetado = 1.5
+TR03 = 5
+TR03W = 7
+TR03A = 5
+TR03AW = 7
+TR02A = 5
+TR02AW = 6
+TR03AW  COM DUO = 10
+TR03A  COM DUO = 10
+TR03A TOPO EM PEDRA  2,5 mm = 7
+TR03A TOPO EM PEDRA  4 mm = 7
+TR03A TOPO EM PEDRA  2,5 mm TOM DEDICADA = 10
+TR03 2TM + 1VER = 7
+TR03  4mm = 7
+TR03A  2 TOM +VM = 8
+TR02AW  1TOM + VM = 6
+TR03AW  2 TOM + VM = 8
+TR02A  4mm² = 5
+ TR02AW  4mm = 6 
+
 """
 
 atividades_apoio_texto = """
