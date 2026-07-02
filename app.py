@@ -54,34 +54,21 @@ def auto_corrigir_hora(texto):
 # =====================================================================
 
 separadores_texto = """
-Henrique
-Fran
-Leonardo
-Patrick
-Sérgio
-Fabiano
-Marcello
+João Silva
+Maria Souza
+Carlos
+Ana
+Pedro
+Lucas
+Rafael
 """
 
 produtos_texto = """
-TR03 = 5
-TR03W = 7
-TR03A = 5
-TR03AW = 7
-TR02A = 5
-TR02AW = 6
-TR03AW  COM DUO = 10
-TR03A  COM DUO = 10
-TR03A TOPO EM PEDRA  2,5 mm = 7
-TR03A TOPO EM PEDRA  4 mm = 7
-TR03A TOPO EM PEDRA  2,5 mm TOM DEDICADA = 10
-TR03 2TM + 1VER = 7
-TR03  4mm = 7
-TR03A  2 TOM +VM = 8
-TR02AW  1TOM + VM = 6
-TR03AW  2 TOM + VM = 8
-TR02A  4mm² = 5
- TR02AW  4mm = 6 
+Modelo Produto A = 5
+Modelo Produto B = 10
+Modelo Produto C = 2.5
+Caixa Organizadora = 8
+Pino Injetado = 1.5
 """
 
 atividades_apoio_texto = """
@@ -101,14 +88,13 @@ for linha in produtos_texto.strip().split('\n'):
         dicionario_produtos[linha.strip()] = 0.0
 
 lista_separadores = ["Selecione..."] + [s.strip() for s in separadores_texto.strip().split('\n') if s.strip()]
-lista_produtos = ["Selecione..."] + [p.strip() for p in produtos_texto.strip().split('\n') if p.strip()] # Para carregar na deleção
+lista_produtos = ["Selecione..."] + [p.strip() for p in produtos_texto.strip().split('\n') if p.strip()] 
 lista_selecao_produtos = ["Selecione...", "⚠️ ATIVIDADE DE APOIO (Outro Setor)"] + list(dicionario_produtos.keys())
 lista_apoio = [a.strip() for a in atividades_apoio_texto.strip().split('\n') if a.strip()]
 
 # =====================================================================
 # FIM DA ÁREA DE EDIÇÃO
 # =====================================================================
-
 
 # 3. INTERFACE DO USUÁRIO (STREAMLIT)
 st.set_page_config(page_title="Controle de Estoque", page_icon="📦", layout="centered")
@@ -129,6 +115,22 @@ aba_separador, aba_coordenador, aba_gestor = st.tabs(["📲 Separador", "📋 Co
 
 # ----------------- ABA 1: SEPARADOR -----------------
 with aba_separador:
+    # GAMIFICAÇÃO: TOP 3 DO DIA
+    data_hoje_str = datetime.now().strftime("%d/%m/%Y")
+    df_podio = pd.read_sql_query("SELECT separador, quantidade, produto FROM estoque WHERE status = 'Aprovado' AND data = ?", conn, params=(data_hoje_str,))
+    if not df_podio.empty:
+        df_podio_est = df_podio[~df_podio['produto'].str.startswith("APOIO:")]
+        if not df_podio_est.empty:
+            ranking_top3 = df_podio_est.groupby('separador')['quantidade'].sum().reset_index().sort_values('quantidade', ascending=False).head(3)
+            if len(ranking_top3) > 0:
+                st.markdown("### 🏆 Top 3 de Produção (Hoje)")
+                cols = st.columns(3)
+                medalhas = ["🥇", "🥈", "🥉"]
+                for i, (idx, row_podio) in enumerate(ranking_top3.iterrows()):
+                    with cols[i]:
+                        st.info(f"{medalhas[i]} **{row_podio['separador']}**\n\n📦 {row_podio['quantidade']} un")
+                st.markdown("---")
+
     st.header("Registrar Novo Estoque / Atividade")
     
     nome = st.selectbox("Seu Nome:", lista_separadores)
@@ -163,13 +165,12 @@ with aba_separador:
                 st.error("❌ Não conseguimos identificar os números no horário. Tente novamente.")
             else:
                 produto_salvar = f"APOIO: {tipo_apoio}" if produto_selecionado == "⚠️ ATIVIDADE DE APOIO (Outro Setor)" else produto_selecionado
-                data_hoje = datetime.now().strftime("%d/%m/%Y")
                 
                 cursor = conn.cursor()
                 cursor.execute('''
                     INSERT INTO estoque (separador, produto, quantidade, hora_inicio, hora_fim, data, status)
                     VALUES (?, ?, ?, ?, ?, ?, ?)
-                ''', (nome, produto_salvar, quantidade, inicio_corrigido, fim_corrigido, data_hoje, 'Pendente'))
+                ''', (nome, produto_salvar, quantidade, inicio_corrigido, fim_corrigido, data_hoje_str, 'Pendente'))
                 conn.commit()
                 st.success(f"✅ Enviado com sucesso ({inicio_corrigido} às {fim_corrigido})! Aguarde aprovação.")
 
@@ -191,12 +192,23 @@ with aba_coordenador:
                 
                 with st.expander(f"{tipo_card} {row['separador']} - {row['produto'].replace('APOIO: ', '')} {detalhe_qtd}"):
                     st.write(f"**Horário:** {row['hora_inicio']} até {row['hora_fim']} | **Data:** {row['data']}")
-                    if st.button(f"✓ Dar OK (Assinar)", key=f"coord_ok_{row['id']}"):
-                        cursor = conn.cursor()
-                        cursor.execute("UPDATE estoque SET status = 'Aprovado' WHERE id = ?", (row['id'],))
-                        conn.commit()
-                        st.success(f"Registro Aprovado!")
-                        st.rerun()
+                    
+                    # BOTÕES DE APROVAR OU REJEITAR
+                    col_ok, col_rej = st.columns(2)
+                    with col_ok:
+                        if st.button(f"✓ Dar OK", key=f"coord_ok_{row['id']}", type="primary", use_container_width=True):
+                            cursor = conn.cursor()
+                            cursor.execute("UPDATE estoque SET status = 'Aprovado' WHERE id = ?", (row['id'],))
+                            conn.commit()
+                            st.success(f"Registro Aprovado!")
+                            st.rerun()
+                    with col_rej:
+                        if st.button(f"❌ Rejeitar", key=f"coord_rej_{row['id']}", use_container_width=True):
+                            cursor = conn.cursor()
+                            cursor.execute("DELETE FROM estoque WHERE id = ?", (row['id'],))
+                            conn.commit()
+                            st.error(f"Registro apagado e rejeitado!")
+                            st.rerun()
 
         st.markdown("---")
         st.subheader("📅 Desempenho e Rankings Diários")
@@ -209,16 +221,13 @@ with aba_coordenador:
             df_diario = df_todos_aprovados[df_todos_aprovados['data'] == data_str].copy()
             if not df_diario.empty:
                 df_diario['Minutos Gastos Reais'] = df_diario.apply(lambda r: calcular_minutos(r['hora_inicio'], r['hora_fim']), axis=1)
-                
                 df_prod_diario = df_diario[~df_diario['produto'].str.startswith("APOIO:")].copy()
                 df_ap_diario = df_diario[df_diario['produto'].str.startswith("APOIO:")].copy()
                 
-                # Exibição dos Rankings do Dia para o Coordenador
                 st.write(f"### 📈 Resumo do Dia {data_str}")
                 
-                # 1. Produtividade de Estoque
-                st.markdown("#### 🏆 Produtividade no Estoque (Hoje)")
                 if not df_prod_diario.empty:
+                    st.markdown("#### 🏆 Produtividade no Estoque")
                     df_prod_diario['Tempo Padrão Unidade'] = df_prod_diario['produto'].map(dicionario_produtos).fillna(0)
                     df_prod_diario['Meta de Tempo Total'] = df_prod_diario['Tempo Padrão Unidade'] * df_prod_diario['quantidade']
                     
@@ -234,21 +243,13 @@ with aba_coordenador:
                     rk_est_dia = rk_est_dia.sort_values(by='Total_Produtos', ascending=False)
                     rk_est_dia.columns = ['Separador', 'Produtos Feitos', 'Meta de Tempo', 'Tempo Gasto', 'Eficiência']
                     st.dataframe(rk_est_dia[['Separador', 'Produtos Feitos', 'Tempo Gasto', 'Eficiência']], hide_index=True, use_container_width=True)
-                else:
-                    st.info("Nenhuma produção de estoque registrada neste dia.")
                 
-                # 2. Atividades de Apoio
-                st.markdown("#### 🛠️ Tempo Dedicado a Outros Setores (Hoje)")
                 if not df_ap_diario.empty:
-                    rk_ap_dia = df_ap_diario.groupby('separador').agg(
-                        Minutos_Apoio=('Minutos Gastos Reais', 'sum')
-                    ).reset_index()
+                    st.markdown("#### 🛠️ Tempo em Outros Setores")
+                    rk_ap_dia = df_ap_diario.groupby('separador').agg(Minutos_Apoio=('Minutos Gastos Reais', 'sum')).reset_index()
                     rk_ap_dia['Tempo Total de Apoio'] = rk_ap_dia['Minutos_Apoio'].map(lambda x: f"{int(x)} min" if x < 60 else f"{int(x/60)}h {int(x%60)}m")
                     rk_ap_dia = rk_ap_dia.sort_values(by='Minutos_Apoio', ascending=False)
-                    rk_ap_dia.columns = ['Funcionário', 'Minutos', 'Tempo Total Dedicado']
-                    st.dataframe(rk_ap_dia[['Funcionário', 'Tempo Total Dedicado']], hide_index=True, use_container_width=True)
-                else:
-                    st.info("Nenhuma atividade de apoio registrada neste dia.")
+                    st.dataframe(rk_ap_dia[['separador', 'Tempo Total de Apoio']], hide_index=True, use_container_width=True)
             else:
                 st.warning(f"Sem registros aprovados no dia {data_str}.")
         else:
@@ -302,8 +303,23 @@ with aba_gestor:
                 
                 st.markdown("---")
                 st.write(f"### 📈 Resumo Geral do Período")
-                st.write(f"**Produtos de Estoque Feitos:** {df_producao['quantidade'].sum()} unidades")
-                st.write(f"**Tempo Total em Outras Tarefas:** {int(df_apoio['Minutos Gastos Reais'].sum() / 60)} horas dedicadas")
+                st.write(f"**Produtos Feitos:** {df_producao['quantidade'].sum()} unidades | **Tempo de Apoio:** {int(df_apoio['Minutos Gastos Reais'].sum() / 60)} horas")
+                
+                # BOTÃO DE EXPORTAÇÃO EXCEL/CSV
+                csv_dados = df_filtrado.to_csv(index=False, sep=';', decimal=',').encode('utf-8-sig')
+                st.download_button(
+                    label="📥 Baixar Relatório (Para Excel)",
+                    data=csv_dados,
+                    file_name=f"relatorio_estoque_{data_inicio.strftime('%d-%m')}_a_{data_fim.strftime('%d-%m')}.csv",
+                    mime="text/csv",
+                    type="primary"
+                )
+                
+                # DASHBOARD: GRÁFICOS VISUAIS
+                if not df_producao.empty:
+                    st.markdown("#### 📊 Gráfico: Quantidade de Produtos por Separador")
+                    grafico_dados = df_producao.groupby('separador')['quantidade'].sum().reset_index()
+                    st.bar_chart(data=grafico_dados.set_index('separador'))
                 
                 st.subheader("🏆 1. Ranking de Produtividade no Estoque")
                 if not df_producao.empty:
@@ -322,24 +338,15 @@ with aba_gestor:
                     ranking_est = ranking_est.sort_values(by='Total_Produtos', ascending=False)
                     ranking_est.columns = ['Separador', 'Produtos Feitos', 'Meta Total', 'Tempo Total Gasto', 'Eficiência Média']
                     st.dataframe(ranking_est[['Separador', 'Produtos Feitos', 'Tempo Total Gasto', 'Eficiência Média']], hide_index=True, use_container_width=True)
-                else:
-                    st.info("Nenhuma produção de estoque registrada no período.")
                 
                 st.subheader("🛠️ 2. Relatório de Horas em Atividades de Apoio")
                 if not df_apoio.empty:
-                    ranking_ap = df_apoio.groupby('separador').agg(
-                        Minutos_Apoio=('Minutos Gastos Reais', 'sum')
-                    ).reset_index()
+                    ranking_ap = df_apoio.groupby('separador').agg(Minutos_Apoio=('Minutos Gastos Reais', 'sum')).reset_index()
                     ranking_ap['Tempo Total de Apoio'] = ranking_ap['Minutos_Apoio'].map(lambda x: f"{int(x/60)}h {int(x%60)}m")
                     ranking_ap = ranking_ap.sort_values(by='Minutos_Apoio', ascending=False)
                     ranking_ap.columns = ['Funcionário', 'Minutos', 'Tempo Total Dedicado a Outros Setores']
                     st.dataframe(ranking_ap[['Funcionário', 'Tempo Total Dedicado a Outros Setores']], hide_index=True, use_container_width=True)
                     
-                    with st.expander("Ver detalhe de tarefas por pessoa"):
-                        df_apoio['Tarefa'] = df_apoio['produto'].str.replace("APOIO: ", "")
-                        st.dataframe(df_apoio[['separador', 'Tarefa', 'hora_inicio', 'hora_fim', 'data']], hide_index=True, use_container_width=True)
-                else:
-                    st.info("Nenhuma atividade de apoio registrada no período.")
             else:
                 st.warning("Não há dados aprovados neste intervalo de datas.")
         else:
