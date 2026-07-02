@@ -74,7 +74,6 @@ aprendizes_texto = """
 Renan
 """
 
-# SETORES ATUALIZADOS
 setor_separadores = {
     "Henrique": "Torres",
     "Fran": "Torres",
@@ -155,22 +154,22 @@ TR02A  4mm² = 5
 
 produtos_caixas_texto = """
 
-CX02Q
-CX02RN
-CXW02
-CP01A
-CXP01T
-CXP01
-CX04S
-CX56
-CX34ABS
-CX44
-CX23ABS
-CX01S
-CX02S
-CX03S
-CXEP02
-CXEP03
+CX02Q = 1
+CX02RN = 1
+CXW02 = 1
+CP01A = 1
+CXP01T = 1
+CXP01 = 1
+CX04S = 1
+CX56 = 1
+CX34ABS = 1
+CX44 = 1
+CX23ABS = 1
+CX01S = 1
+CX02S = 1
+CX03S = 1
+CXEP02 = 1
+CXEP03 = 1
 """
 
 atividades_apoio_texto = """
@@ -198,17 +197,22 @@ Indução Automática
 Indução Semiautomática
 """
 
+# CORREÇÃO APLICADA AQUI (Voltou o "elif linha.strip()")
 dicionario_torres = {}
 for linha in produtos_torres_texto.strip().split('\n'):
     if '=' in linha:
         nome_prod, tempo = linha.split('=')
         dicionario_torres[nome_prod.strip()] = float(tempo.strip())
+    elif linha.strip():
+        dicionario_torres[linha.strip()] = 0.0
 
 dicionario_caixas = {}
 for linha in produtos_caixas_texto.strip().split('\n'):
     if '=' in linha:
         nome_prod, tempo = linha.split('=')
         dicionario_caixas[nome_prod.strip()] = float(tempo.strip())
+    elif linha.strip():
+        dicionario_caixas[linha.strip()] = 0.0
 
 dicionario_produtos = {**dicionario_torres, **dicionario_caixas}
 
@@ -268,7 +272,6 @@ with aba_separador:
         msg_saudacao = random.choice(opcoes_saudacao)
         st.success(f"🔓 {obter_bom_dia()}, {nome}! {msg_saudacao}")
         
-        # FILTRO DE SETOR APLICADO AQUI
         setor_do_funcionario = setor_separadores.get(nome, "Todos")
         lista_opcoes_dinamica = ["Selecione...", "⚠️ ATIVIDADE DE APOIO (Outro Setor)", "📦 ADIANTAR PEDIDOS (Dia Seguinte)"]
         
@@ -363,7 +366,6 @@ with aba_aprendiz:
         prod_apr = "Selecione..."
         qtd_apr = 0
         
-        # FILTRO DE SETOR PARA O APRENDIZ
         if tarefa_apr == "⚠️ FAZER ESTOQUE (Contar Peças)":
             setor_do_aprendiz = setor_separadores.get(nome_apr, "Todos")
             if setor_do_aprendiz == "Torres":
