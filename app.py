@@ -57,7 +57,7 @@ def obter_bom_dia():
     else: return "Boa noite"
 
 # =====================================================================
-# ÁREA DE EDIÇÃO: SEPARADORES, SENHAS E PERSONALIDADES
+# ÁREA DE EDIÇÃO: SEPARADORES E SENHAS
 # =====================================================================
 
 separadores_texto = """
@@ -74,7 +74,6 @@ aprendizes_texto = """
 Renan
 """
 
-# Você pode mudar as senhas deles aqui se quiser
 senhas_separadores = {
     "Henrique": "1010",
     "Fran": "2020",
@@ -87,40 +86,136 @@ senhas_separadores = {
 }
 
 # =====================================================================
-# INTELIGÊNCIA DE PERSONALIDADES E PIADAS INTERNAS
+# INTELIGÊNCIA: ROLETA DE PIADAS INTERNAS (5 opções por pessoa)
 # =====================================================================
 mensagens_personalizadas = {
     "Henrique": {
-        "saudacao": "Já deu aquele trato no Vectra branco hoje? 🚗💨",
-        "elogio": "Acelerando na produção mais que o Vectra na reta! Foguete! 🚀"
+        "saudacao": [
+            "Já deu aquele trato no Vectra branco hoje? 🚗💨",
+            "Pronto pra acelerar na produção pique Vectra na rodovia? 🛣️",
+            "O Vectra tá brilhando no estacionamento hoje? ✨",
+            "Bora botar a produção pra andar mais rápido que o Vectra! 🏎️",
+            "Aí sim! Chegou o piloto do Vectra branco! Bora trampar! 🏁"
+        ],
+        "elogio": [
+            "Acelerando na produção mais que o Vectra na reta! Foguete! 🚀",
+            "Pisou fundo agora, hein! 💨",
+            "Zero a cem em 3 segundos nessa meta! Brabíssimo! 🏎️",
+            "O Vectra branco passou voando! Boa, Henrique! 🦅",
+            "Com essa velocidade, nem radar pega! Sensacional! 📸"
+        ]
     },
     "Fran": {
-        "saudacao": "Opa, Catarina na área! Vai rolar aquele sushi caprichado mais tarde? 🍣",
-        "elogio": "Trabalho fino e de qualidade, igualzinho ao seu sushi, Catarina! 🍣🔥"
+        "saudacao": [
+            "Opa, Catarina na área! Vai rolar aquele sushi caprichado mais tarde? 🍣",
+            "Já separou o shoyu pra hoje, Catarina? 🥢",
+            "A melhor sushiman da empresa chegou! 🍱",
+            "Bora produzir com a mesma precisão que você corta um salmão! 🔪🐟",
+            "Preparada pra enrolar essas metas igual temaki? 🍙"
+        ],
+        "elogio": [
+            "Trabalho fino e de qualidade, igualzinho ao seu sushi, Catarina! 🍣🔥",
+            "Entregou tudo num combo premium! 🍱",
+            "Qualidade nota 10, estilo chef Catarina! 🔪",
+            "Mandou bem demais! Merece até um combinado de salmão hoje! 🍣🏆",
+            "Produção rodando lisinha igual faca de sushiman! Aulas! 🥢"
+        ]
     },
     "Leonardo": {
-        "saudacao": "E aí Magrão! O Kadettão vermelho tá brilhando hoje? 🚗🔴",
-        "elogio": "Mais rápido que o Kadett vermelho na descida, Magrão! Voou! 🦅"
+        "saudacao": [
+            "E aí Magrão! O Kadettão vermelho tá brilhando hoje? 🚗🔴",
+            "Deixou o Kadett descansando ou veio acelerando, Magrão? 🏁",
+            "Bora! Produção pedindo aquele motor de Kadett! 🚀",
+            "Aí o Magrão chegou! O terror dos radares com o Kadett vermelho! 🚦",
+            "Pronto pra botar a fábrica pra girar no vermelho, Magrão? 🔴🔥"
+        ],
+        "elogio": [
+            "Mais rápido que o Kadett vermelho na descida, Magrão! Voou! 🦅",
+            "O Magrão botou o Kadett na pista e ninguém segura! 🏎️💨",
+            "Fez a curva e bateu a meta! Monstro! 🏁",
+            "Velocidade máxima atingida! Parabéns Magrão! 🏆",
+            "Brabo! O Kadett vermelho tem que respeitar essa produção! 🚀"
+        ]
     },
     "Patrick": {
-        "saudacao": "E as vendas de bolacha, tão rendendo? 🍪💰",
-        "elogio": "Produzindo mais que a fábrica de bolacha inteira! Brabo! 🍪🚀"
+        "saudacao": [
+            "E as vendas de bolacha, tão rendendo? 🍪💰",
+            "Trouxe pacote de bolacha pra galera hoje, Patrick? 🍪👀",
+            "O rei da bolacha tá na área! Bora produzir! 👑",
+            "Hoje é dia de faturar no estoque e na bolacha! 💸",
+            "Pique fábrica de bolacha: produção a milhão! 🏭🍪"
+        ],
+        "elogio": [
+            "Produzindo mais que a fábrica de bolacha inteira! Brabo! 🍪🚀",
+            "Caiu o pix da bolacha e a meta de produção! Aí sim! 💸🔥",
+            "Bolacha crocante e meta batida! Voando, Patrick! 🦅",
+            "O cara é bom de venda e bom de produção! Monstro! 🏆",
+            "Estoque tá cheio igual pacote novo! Mandou bem! 📦"
+        ]
     },
     "Fabiano": {
-        "saudacao": "Respeita a experiência! (Ou devo dizer Vovô? 👴🏼😂)",
-        "elogio": "Aí sim, Vovô! Mostrando pra garotada como é que se trabalha de verdade! 🏆"
+        "saudacao": [
+            "Respeita a experiência! (Ou devo dizer Vovô? 👴🏼😂)",
+            "Bora ensinar a garotada como se faz, Fabiano? 📚",
+            "O Vovô chegou! A sabedoria da empresa tá on! 🧠💡",
+            "A coluna tá boa pra bater meta hoje, Fabiano? Brincadeira! 😂",
+            "Salve Vovô! Prepara o café forte que hoje tem! ☕"
+        ],
+        "elogio": [
+            "Aí sim, Vovô! Mostrando pra garotada como é que se trabalha de verdade! 🏆",
+            "A experiência conta muito! Trabalho impecável, Fabiano! 👏",
+            "Velha guarda amassando nas metas! Brabo demais! 👴🏼🚀",
+            "Fez parecer fácil! Vovô tem a manha! 🎮",
+            "Aulas de produção com o Fabiano! Os novinhos piram! 📚🔥"
+        ]
     },
     "Sérgio": {
-        "saudacao": "Tá sobrando tempo pra treinar as tartarugas hoje? 🐢😂",
-        "elogio": "Boa! Se treinar tartaruga já dá trabalho, imagina bater essa meta! Sensacional! 🐢🔥"
+        "saudacao": [
+            "Tá sobrando tempo pra treinar as tartarugas hoje, Sérgio? 🐢😂",
+            "As tartarugas já tão ninjas? 🥷🐢",
+            "Acelera aí pra não ficar no ritmo das tartarugas, Sérgio! 🏃‍♂️💨",
+            "E aí mestre Splinter, como tão as tartarugas? 🐢🍕",
+            "Sérgio na área! Bora botar velocidade ninja hoje! ⚡"
+        ],
+        "elogio": [
+            "Boa! Se treinar tartaruga já dá trabalho, imagina bater essa meta! Sensacional! 🐢🔥",
+            "Ritmo de lebre, nada de tartaruga! Voou, Sérgio! 🦅",
+            "Mestre das tartarugas e da produção! Parabéns! 🏆",
+            "Ninja demais! Aprovado com sucesso! 🥷",
+            "Tá mais rápido que tartaruga ladeira abaixo! Mandou bem! 🚀"
+        ]
     },
     "Marcello": {
-        "saudacao": "Como você sempre diz: Foco na PRODUÇÃO! 🏭👊",
-        "elogio": "PRODUÇÃO a milhão, hein Marcello! Não deixa a peteca cair! 🏭🚀"
+        "saudacao": [
+            "Como você sempre diz: Foco na PRODUÇÃO! 🏭👊",
+            "A palavra do dia é: PRODUÇÃO! 🗣️",
+            "Já gritou PRODUÇÃO hoje, Marcello? 📣",
+            "Chegou o homem que respira PRODUÇÃO! ⚙️",
+            "Vamos botar essa PRODUÇÃO pra girar, Marcello! 🔥"
+        ],
+        "elogio": [
+            "PRODUÇÃO a milhão, hein Marcello! Não deixa a peteca cair! 🏭🚀",
+            "Isso sim que é PRODUÇÃO de verdade! Amassou! 👊",
+            "Gritou PRODUÇÃO e entregou tudo! Monstro! 🏆",
+            "O cara é a própria máquina de PRODUÇÃO! 🤖",
+            "Meta alcançada em nome da PRODUÇÃO! Parabéns! 🎉"
+        ]
     },
     "Renan": {
-        "saudacao": "Cuidado pra não prender esse cabelão nas caixas do estoque, hein! 💇‍♂️😂",
-        "elogio": "Mandou bem demais! Até jogou o cabelão pro lado pra comemorar! 🎸🔥"
+        "saudacao": [
+            "Cuidado pra não prender esse cabelão nas caixas do estoque, hein! 💇‍♂️😂",
+            "Gastou meio pote de shampoo hoje nesse cabelão, Renan? 🧴",
+            "E aí cabeludo! Bora botar pra quebrar hoje? 🎸",
+            "O cabelão tá solto pra voar no estoque hoje? 🦅",
+            "Chegou o aprendiz cabeludo! Bora focar nas metas! 🚀"
+        ],
+        "elogio": [
+            "Mandou bem demais! Até jogou o cabelão pro lado pra comemorar! 🎸🔥",
+            "Voando baixo! O vento até bagunçou o cabelão! 💨",
+            "Aprendiz nota mil! Tá ganhando moral, Renan! 🏆",
+            "Estoque dominado pelo cabeludo! Brabo! 🤘",
+            "Ligeiro demais! Continua assim, Renan! 🚀"
+        ]
     }
 }
 
@@ -231,8 +326,9 @@ with aba_separador:
         senha_digitada = st.text_input("Digite seu PIN de acesso:", type="password", key="pwd_sep_main")
 
     if nome != "Selecione..." and senha_digitada == senhas_separadores.get(nome, ""):
-        # SAUDAÇÃO PERSONALIZADA
-        msg_saudacao = mensagens_personalizadas.get(nome, {}).get("saudacao", "Bora produzir? 🚀")
+        # Sorteia uma saudação
+        opcoes_saudacao = mensagens_personalizadas.get(nome, {}).get("saudacao", ["Bora produzir? 🚀"])
+        msg_saudacao = random.choice(opcoes_saudacao)
         st.success(f"🔓 {obter_bom_dia()}, {nome}! {msg_saudacao}")
         
         produto_selecionado = st.selectbox("O que você produziu agora?", lista_selecao_produtos, key="sel_prod_main")
@@ -270,7 +366,9 @@ with aba_separador:
                     
                     st.toast('Enviado com sucesso! 🚀', icon='✅')
                     st.balloons()
-                    msg_elogio = mensagens_personalizadas.get(nome, {}).get("elogio", "Atividade enviada com sucesso!")
+                    # Sorteia um elogio
+                    opcoes_elogio = mensagens_personalizadas.get(nome, {}).get("elogio", ["Atividade enviada com sucesso!"])
+                    msg_elogio = random.choice(opcoes_elogio)
                     st.success(f"🎉 **{msg_elogio}** (Aguardando OK do coordenador)")
 
         st.markdown("---")
@@ -298,7 +396,8 @@ with aba_aprendiz:
         senha_digitada_apr = st.text_input("Digite seu PIN de acesso:", type="password", key="pwd_apr")
         
     if nome_apr != "Selecione..." and senha_digitada_apr == senhas_separadores.get(nome_apr, ""):
-        msg_saudacao_apr = mensagens_personalizadas.get(nome_apr, {}).get("saudacao", "Vamos ao trabalho? 🚀")
+        opcoes_saudacao_apr = mensagens_personalizadas.get(nome_apr, {}).get("saudacao", ["Vamos ao trabalho? 🚀"])
+        msg_saudacao_apr = random.choice(opcoes_saudacao_apr)
         st.success(f"🔓 {obter_bom_dia()}, {nome_apr}! {msg_saudacao_apr}")
         
         tarefa_apr = st.selectbox("O que você fez agora?", lista_tarefas_aprendiz, key="sel_tarefa_apr")
@@ -342,7 +441,8 @@ with aba_aprendiz:
                     
                     st.toast('Atividade salva! 🚀', icon='✅')
                     st.balloons()
-                    msg_elogio_apr = mensagens_personalizadas.get(nome_apr, {}).get("elogio", "Valeu pela força!")
+                    opcoes_elogio_apr = mensagens_personalizadas.get(nome_apr, {}).get("elogio", ["Valeu pela força!"])
+                    msg_elogio_apr = random.choice(opcoes_elogio_apr)
                     st.success(f"🎉 **{msg_elogio_apr}** Registro enviado pro chefe.")
                     
     elif senha_digitada_apr != "":
