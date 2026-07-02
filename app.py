@@ -57,7 +57,7 @@ def obter_bom_dia():
     else: return "Boa noite"
 
 # =====================================================================
-# ÁREA DE EDIÇÃO: SEPARADORES E SENHAS
+# ÁREA DE EDIÇÃO: SEPARADORES, SETORES, SENHAS E PRODUTOS
 # =====================================================================
 
 separadores_texto = """
@@ -74,6 +74,18 @@ aprendizes_texto = """
 Renan
 """
 
+# SETORES ATUALIZADOS
+setor_separadores = {
+    "Henrique": "Torres",
+    "Fran": "Torres",
+    "Leonardo": "Torres",
+    "Patrick": "Torres",
+    "Fabiano": "Caixas",
+    "Marcello": "Caixas",
+    "Sérgio": "Caixas",
+    "Renan": "Caixas"
+}
+
 senhas_separadores = {
     "Henrique": "1010",
     "Fran": "2020",
@@ -85,141 +97,42 @@ senhas_separadores = {
     "Renan": "8080"
 }
 
-# =====================================================================
-# INTELIGÊNCIA: ROLETA DE PIADAS INTERNAS (5 opções por pessoa)
-# =====================================================================
 mensagens_personalizadas = {
     "Henrique": {
-        "saudacao": [
-            "Já deu aquele trato no Vectra branco hoje? 🚗💨",
-            "Pronto pra acelerar na produção pique Vectra na rodovia? 🛣️",
-            "O Vectra tá brilhando no estacionamento hoje? ✨",
-            "Bora botar a produção pra andar mais rápido que o Vectra! 🏎️",
-            "Aí sim! Chegou o piloto do Vectra branco! Bora trampar! 🏁"
-        ],
-        "elogio": [
-            "Acelerando na produção mais que o Vectra na reta! Foguete! 🚀",
-            "Pisou fundo agora, hein! 💨",
-            "Zero a cem em 3 segundos nessa meta! Brabíssimo! 🏎️",
-            "O Vectra branco passou voando! Boa, Henrique! 🦅",
-            "Com essa velocidade, nem radar pega! Sensacional! 📸"
-        ]
+        "saudacao": ["Já deu aquele trato no Vectra branco hoje? 🚗💨", "Pronto pra acelerar na produção pique Vectra na rodovia? 🛣️", "O Vectra tá brilhando no estacionamento hoje? ✨"],
+        "elogio": ["Acelerando na produção mais que o Vectra na reta! Foguete! 🚀", "Zero a cem em 3 segundos nessa meta! Brabíssimo! 🏎️"]
     },
     "Fran": {
-        "saudacao": [
-            "Opa, Catarina na área! Vai rolar aquele sushi caprichado mais tarde? 🍣",
-            "Já separou o shoyu pra hoje, Catarina? 🥢",
-            "A melhor sushiman da empresa chegou! 🍱",
-            "Bora produzir com a mesma precisão que você corta um salmão! 🔪🐟",
-            "Preparada pra enrolar essas metas igual temaki? 🍙"
-        ],
-        "elogio": [
-            "Trabalho fino e de qualidade, igualzinho ao seu sushi, Catarina! 🍣🔥",
-            "Entregou tudo num combo premium! 🍱",
-            "Qualidade nota 10, estilo chef Catarina! 🔪",
-            "Mandou bem demais! Merece até um combinado de salmão hoje! 🍣🏆",
-            "Produção rodando lisinha igual faca de sushiman! Aulas! 🥢"
-        ]
+        "saudacao": ["Opa, Catarina na área! Vai rolar aquele sushi caprichado mais tarde? 🍣", "Já separou o shoyu pra hoje, Catarina? 🥢"],
+        "elogio": ["Trabalho fino e de qualidade, igualzinho ao seu sushi, Catarina! 🍣🔥", "Entregou tudo num combo premium! 🍱"]
     },
     "Leonardo": {
-        "saudacao": [
-            "E aí Magrão! O Kadettão vermelho tá brilhando hoje? 🚗🔴",
-            "Deixou o Kadett descansando ou veio acelerando, Magrão? 🏁",
-            "Bora! Produção pedindo aquele motor de Kadett! 🚀",
-            "Aí o Magrão chegou! O terror dos radares com o Kadett vermelho! 🚦",
-            "Pronto pra botar a fábrica pra girar no vermelho, Magrão? 🔴🔥"
-        ],
-        "elogio": [
-            "Mais rápido que o Kadett vermelho na descida, Magrão! Voou! 🦅",
-            "O Magrão botou o Kadett na pista e ninguém segura! 🏎️💨",
-            "Fez a curva e bateu a meta! Monstro! 🏁",
-            "Velocidade máxima atingida! Parabéns Magrão! 🏆",
-            "Brabo! O Kadett vermelho tem que respeitar essa produção! 🚀"
-        ]
+        "saudacao": ["E aí Magrão! O Kadettão vermelho tá brilhando hoje? 🚗🔴", "Pronto pra botar a fábrica pra girar no vermelho, Magrão? 🔴🔥"],
+        "elogio": ["Mais rápido que o Kadett vermelho na descida, Magrão! Voou! 🦅", "Velocidade máxima atingida! Parabéns Magrão! 🏆"]
     },
     "Patrick": {
-        "saudacao": [
-            "E as vendas de bolacha, tão rendendo? 🍪💰",
-            "Trouxe pacote de bolacha pra galera hoje, Patrick? 🍪👀",
-            "O rei da bolacha tá na área! Bora produzir! 👑",
-            "Hoje é dia de faturar no estoque e na bolacha! 💸",
-            "Pique fábrica de bolacha: produção a milhão! 🏭🍪"
-        ],
-        "elogio": [
-            "Produzindo mais que a fábrica de bolacha inteira! Brabo! 🍪🚀",
-            "Caiu o pix da bolacha e a meta de produção! Aí sim! 💸🔥",
-            "Bolacha crocante e meta batida! Voando, Patrick! 🦅",
-            "O cara é bom de venda e bom de produção! Monstro! 🏆",
-            "Estoque tá cheio igual pacote novo! Mandou bem! 📦"
-        ]
+        "saudacao": ["E as vendas de bolacha, tão rendendo? 🍪💰", "Trouxe pacote de bolacha pra galera hoje, Patrick? 🍪👀"],
+        "elogio": ["Produzindo mais que a fábrica de bolacha inteira! Brabo! 🍪🚀", "Caiu o pix da bolacha e a meta de produção! Aí sim! 💸🔥"]
     },
     "Fabiano": {
-        "saudacao": [
-            "Respeita a experiência! (Ou devo dizer Vovô? 👴🏼😂)",
-            "Bora ensinar a garotada como se faz, Fabiano? 📚",
-            "O Vovô chegou! A sabedoria da empresa tá on! 🧠💡",
-            "A coluna tá boa pra bater meta hoje, Fabiano? Brincadeira! 😂",
-            "Salve Vovô! Prepara o café forte que hoje tem! ☕"
-        ],
-        "elogio": [
-            "Aí sim, Vovô! Mostrando pra garotada como é que se trabalha de verdade! 🏆",
-            "A experiência conta muito! Trabalho impecável, Fabiano! 👏",
-            "Velha guarda amassando nas metas! Brabo demais! 👴🏼🚀",
-            "Fez parecer fácil! Vovô tem a manha! 🎮",
-            "Aulas de produção com o Fabiano! Os novinhos piram! 📚🔥"
-        ]
+        "saudacao": ["Respeita a experiência! (Ou devo dizer Vovô? 👴🏼😂)", "O Vovô chegou! A sabedoria da empresa tá on! 🧠💡"],
+        "elogio": ["Aí sim, Vovô! Mostrando pra garotada como é que se trabalha de verdade! 🏆", "A experiência conta muito! Trabalho impecável, Fabiano! 👏"]
     },
     "Sérgio": {
-        "saudacao": [
-            "Tá sobrando tempo pra treinar as tartarugas hoje, Sérgio? 🐢😂",
-            "As tartarugas já tão ninjas? 🥷🐢",
-            "Acelera aí pra não ficar no ritmo das tartarugas, Sérgio! 🏃‍♂️💨",
-            "E aí mestre Splinter, como tão as tartarugas? 🐢🍕",
-            "Sérgio na área! Bora botar velocidade ninja hoje! ⚡"
-        ],
-        "elogio": [
-            "Boa! Se treinar tartaruga já dá trabalho, imagina bater essa meta! Sensacional! 🐢🔥",
-            "Ritmo de lebre, nada de tartaruga! Voou, Sérgio! 🦅",
-            "Mestre das tartarugas e da produção! Parabéns! 🏆",
-            "Ninja demais! Aprovado com sucesso! 🥷",
-            "Tá mais rápido que tartaruga ladeira abaixo! Mandou bem! 🚀"
-        ]
+        "saudacao": ["Tá sobrando tempo pra treinar as tartarugas hoje, Sérgio? 🐢😂", "As tartarugas já tão ninjas? 🥷🐢"],
+        "elogio": ["Boa! Se treinar tartaruga já dá trabalho, imagina bater essa meta! Sensacional! 🐢🔥", "Ritmo de lebre, nada de tartaruga! Voou, Sérgio! 🦅"]
     },
     "Marcello": {
-        "saudacao": [
-            "Como você sempre diz: Foco na PRODUÇÃO! 🏭👊",
-            "A palavra do dia é: PRODUÇÃO! 🗣️",
-            "Já gritou PRODUÇÃO hoje, Marcello? 📣",
-            "Chegou o homem que respira PRODUÇÃO! ⚙️",
-            "Vamos botar essa PRODUÇÃO pra girar, Marcello! 🔥"
-        ],
-        "elogio": [
-            "PRODUÇÃO a milhão, hein Marcello! Não deixa a peteca cair! 🏭🚀",
-            "Isso sim que é PRODUÇÃO de verdade! Amassou! 👊",
-            "Gritou PRODUÇÃO e entregou tudo! Monstro! 🏆",
-            "O cara é a própria máquina de PRODUÇÃO! 🤖",
-            "Meta alcançada em nome da PRODUÇÃO! Parabéns! 🎉"
-        ]
+        "saudacao": ["Como você sempre diz: Foco na PRODUÇÃO! 🏭👊", "Chegou o homem que respira PRODUÇÃO! ⚙️"],
+        "elogio": ["PRODUÇÃO a milhão, hein Marcello! Não deixa a peteca cair! 🏭🚀", "Isso sim que é PRODUÇÃO de verdade! Amassou! 👊"]
     },
     "Renan": {
-        "saudacao": [
-            "Cuidado pra não prender esse cabelão nas caixas do estoque, hein! 💇‍♂️😂",
-            "Gastou meio pote de shampoo hoje nesse cabelão, Renan? 🧴",
-            "E aí cabeludo! Bora botar pra quebrar hoje? 🎸",
-            "O cabelão tá solto pra voar no estoque hoje? 🦅",
-            "Chegou o aprendiz cabeludo! Bora focar nas metas! 🚀"
-        ],
-        "elogio": [
-            "Mandou bem demais! Até jogou o cabelão pro lado pra comemorar! 🎸🔥",
-            "Voando baixo! O vento até bagunçou o cabelão! 💨",
-            "Aprendiz nota mil! Tá ganhando moral, Renan! 🏆",
-            "Estoque dominado pelo cabeludo! Brabo! 🤘",
-            "Ligeiro demais! Continua assim, Renan! 🚀"
-        ]
+        "saudacao": ["Cuidado pra não prender esse cabelão nas caixas do estoque, hein! 💇‍♂️😂", "E aí cabeludo! Bora botar pra quebrar hoje? 🎸"],
+        "elogio": ["Mandou bem demais! Até jogou o cabelão pro lado pra comemorar! 🎸🔥", "Aprendiz nota mil! Tá ganhando moral, Renan! 🏆"]
     }
 }
 
-produtos_texto = """
+produtos_torres_texto = """
 TR03 = 5
 TR03W = 7
 TR03A = 5
@@ -238,6 +151,26 @@ TR02AW  1TOM + VM = 6
 TR03AW  2 TOM + VM = 8
 TR02A  4mm² = 5
  TR02AW  4mm = 6 
+"""
+
+produtos_caixas_texto = """
+
+CX02Q
+CX02RN
+CXW02
+CP01A
+CXP01T
+CXP01
+CX04S
+CX56
+CX34ABS
+CX44
+CX23ABS
+CX01S
+CX02S
+CX03S
+CXEP02
+CXEP03
 """
 
 atividades_apoio_texto = """
@@ -265,17 +198,22 @@ Indução Automática
 Indução Semiautomática
 """
 
-dicionario_produtos = {}
-for linha in produtos_texto.strip().split('\n'):
+dicionario_torres = {}
+for linha in produtos_torres_texto.strip().split('\n'):
     if '=' in linha:
         nome_prod, tempo = linha.split('=')
-        dicionario_produtos[nome_prod.strip()] = float(tempo.strip())
-    elif linha.strip():
-        dicionario_produtos[linha.strip()] = 0.0
+        dicionario_torres[nome_prod.strip()] = float(tempo.strip())
+
+dicionario_caixas = {}
+for linha in produtos_caixas_texto.strip().split('\n'):
+    if '=' in linha:
+        nome_prod, tempo = linha.split('=')
+        dicionario_caixas[nome_prod.strip()] = float(tempo.strip())
+
+dicionario_produtos = {**dicionario_torres, **dicionario_caixas}
 
 lista_separadores = ["Selecione..."] + [s.strip() for s in separadores_texto.strip().split('\n') if s.strip()]
 lista_aprendizes = ["Selecione..."] + [a.strip() for a in aprendizes_texto.strip().split('\n') if a.strip()]
-lista_selecao_produtos = ["Selecione...", "⚠️ ATIVIDADE DE APOIO (Outro Setor)"] + list(dicionario_produtos.keys())
 lista_apoio = [a.strip() for a in atividades_apoio_texto.strip().split('\n') if a.strip()]
 lista_tarefas_aprendiz = [t.strip() for t in atividades_aprendiz_texto.strip().split('\n') if t.strip()]
 lista_materiais_abrir = ["Selecione..."] + [m.strip() for m in materiais_abertura_texto.strip().split('\n') if m.strip()]
@@ -306,11 +244,11 @@ with aba_separador:
     df_podio = pd.read_sql_query("SELECT separador, quantidade, produto FROM estoque WHERE status = 'Aprovado' AND data = ?", conn, params=(data_hoje_str,))
     
     if not df_podio.empty:
-        df_podio_est = df_podio[~df_podio['produto'].str.startswith("APOIO:") & ~df_podio['produto'].str.startswith("APRENDIZ")]
+        df_podio_est = df_podio[~df_podio['produto'].str.startswith("APOIO:") & ~df_podio['produto'].str.startswith("APRENDIZ") & ~df_podio['produto'].str.startswith("ADIANTAMENTO:")]
         if not df_podio_est.empty:
             ranking_top3 = df_podio_est.groupby('separador')['quantidade'].sum().reset_index().sort_values('quantidade', ascending=False).head(3)
             if len(ranking_top3) > 0:
-                st.markdown("### 🏆 Pódio do Dia (Top 3)")
+                st.markdown("### 🏆 Pódio do Dia (Estoque)")
                 cols = st.columns(3)
                 medalhas = ["🥇", "🥈", "🥉"]
                 for i, (idx, row_podio) in enumerate(ranking_top3.iterrows()):
@@ -326,17 +264,32 @@ with aba_separador:
         senha_digitada = st.text_input("Digite seu PIN de acesso:", type="password", key="pwd_sep_main")
 
     if nome != "Selecione..." and senha_digitada == senhas_separadores.get(nome, ""):
-        # Sorteia uma saudação
         opcoes_saudacao = mensagens_personalizadas.get(nome, {}).get("saudacao", ["Bora produzir? 🚀"])
         msg_saudacao = random.choice(opcoes_saudacao)
         st.success(f"🔓 {obter_bom_dia()}, {nome}! {msg_saudacao}")
         
-        produto_selecionado = st.selectbox("O que você produziu agora?", lista_selecao_produtos, key="sel_prod_main")
+        # FILTRO DE SETOR APLICADO AQUI
+        setor_do_funcionario = setor_separadores.get(nome, "Todos")
+        lista_opcoes_dinamica = ["Selecione...", "⚠️ ATIVIDADE DE APOIO (Outro Setor)", "📦 ADIANTAR PEDIDOS (Dia Seguinte)"]
+        
+        if setor_do_funcionario == "Torres":
+            lista_opcoes_dinamica += list(dicionario_torres.keys())
+        elif setor_do_funcionario == "Caixas":
+            lista_opcoes_dinamica += list(dicionario_caixas.keys())
+        else:
+            lista_opcoes_dinamica += list(dicionario_produtos.keys())
+            
+        produto_selecionado = st.selectbox("O que você fez agora?", lista_opcoes_dinamica, key="sel_prod_main")
         
         if produto_selecionado == "⚠️ ATIVIDADE DE APOIO (Outro Setor)":
             tipo_apoio = st.selectbox("Qual apoio você deu pra equipe?", lista_apoio)
             quantidade = 0
             st.info("💡 Foca em lançar o horário certinho que você passou ajudando!")
+            
+        elif produto_selecionado == "📦 ADIANTAR PEDIDOS (Dia Seguinte)":
+            quantidade = st.number_input("Quantos pedidos você adiantou?", min_value=1, step=1, key="num_qtd_adiant")
+            st.info("💡 Sensacional! Registra o horário certinho que você passou adiantando esses pedidos.")
+            
         else:
             quantidade = st.number_input("Quantidade (Unidades):", min_value=1, step=1, key="num_qtd_main")
             if produto_selecionado != "Selecione..." and produto_selecionado in dicionario_produtos:
@@ -358,7 +311,13 @@ with aba_separador:
                 if not inicio_corrigido or not fim_corrigido:
                     st.error("❌ Vish, não entendi os números do horário. Tenta de novo.")
                 else:
-                    produto_salvar = f"APOIO: {tipo_apoio}" if produto_selecionado == "⚠️ ATIVIDADE DE APOIO (Outro Setor)" else produto_selecionado
+                    if produto_selecionado == "⚠️ ATIVIDADE DE APOIO (Outro Setor)":
+                        produto_salvar = f"APOIO: {tipo_apoio}"
+                    elif produto_selecionado == "📦 ADIANTAR PEDIDOS (Dia Seguinte)":
+                        produto_salvar = "ADIANTAMENTO: Pedidos"
+                    else:
+                        produto_salvar = produto_selecionado
+                        
                     cursor = conn.cursor()
                     cursor.execute('INSERT INTO estoque (separador, produto, quantidade, hora_inicio, hora_fim, data, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
                                    (nome, produto_salvar, quantidade, inicio_corrigido, fim_corrigido, data_hoje_str, 'Pendente'))
@@ -366,7 +325,6 @@ with aba_separador:
                     
                     st.toast('Enviado com sucesso! 🚀', icon='✅')
                     st.balloons()
-                    # Sorteia um elogio
                     opcoes_elogio = mensagens_personalizadas.get(nome, {}).get("elogio", ["Atividade enviada com sucesso!"])
                     msg_elogio = random.choice(opcoes_elogio)
                     st.success(f"🎉 **{msg_elogio}** (Aguardando OK do coordenador)")
@@ -380,7 +338,7 @@ with aba_separador:
         if df_historico_sep.empty:
             st.info("Nada registrado ainda.")
         else:
-            df_historico_sep['produto'] = df_historico_sep['produto'].str.replace("APOIO: ", "Apoio: ")
+            df_historico_sep['produto'] = df_historico_sep['produto'].str.replace("APOIO: ", "Apoio: ").str.replace("ADIANTAMENTO: ", "Adiantou: ")
             st.dataframe(df_historico_sep, hide_index=True, use_container_width=True)
             
     elif senha_digitada != "":
@@ -405,9 +363,19 @@ with aba_aprendiz:
         prod_apr = "Selecione..."
         qtd_apr = 0
         
+        # FILTRO DE SETOR PARA O APRENDIZ
         if tarefa_apr == "⚠️ FAZER ESTOQUE (Contar Peças)":
-            prod_apr = st.selectbox("Qual modelo?", ["Selecione..."] + list(dicionario_produtos.keys()), key="prod_apr_est")
+            setor_do_aprendiz = setor_separadores.get(nome_apr, "Todos")
+            if setor_do_aprendiz == "Torres":
+                lista_prod_aprendiz = list(dicionario_torres.keys())
+            elif setor_do_aprendiz == "Caixas":
+                lista_prod_aprendiz = list(dicionario_caixas.keys())
+            else:
+                lista_prod_aprendiz = list(dicionario_produtos.keys())
+                
+            prod_apr = st.selectbox("Qual modelo?", ["Selecione..."] + lista_prod_aprendiz, key="prod_apr_est")
             qtd_apr = st.number_input("Quantidade:", min_value=1, step=1, key="qtd_apr_est")
+            
         elif tarefa_apr == "Abrir Material para Separadores":
             prod_apr = st.selectbox("Que material você abriu?", lista_materiais_abrir, key="mat_apr_abrir")
             qtd_apr = st.number_input("Quantidade (un/caixas):", min_value=1, step=1, key="qtd_apr_abrir")
@@ -473,6 +441,9 @@ with aba_coordenador:
                 elif row['produto'].startswith("APOIO:"):
                     tipo_card = "🛠️ APOIO SEPARADOR"
                     txt_prod = row['produto'].replace("APOIO: ", "")
+                elif row['produto'] == "ADIANTAMENTO: Pedidos":
+                    tipo_card = "🚀 ADIANTAR PEDIDOS"
+                    txt_prod = f"{row['quantidade']} pedidos adiantados"
                 else:
                     tipo_card = "🔔 ESTOQUE SEPARADOR"
                     txt_prod = f"{row['produto']} ({row['quantidade']} un)"
@@ -506,7 +477,9 @@ with aba_coordenador:
             
             if not df_periodo_coord.empty:
                 df_periodo_coord['Minutos Gastos Reais'] = df_periodo_coord.apply(lambda r: calcular_minutos(r['hora_inicio'], r['hora_fim']), axis=1)
-                df_prod_coord = df_periodo_coord[~df_periodo_coord['produto'].str.startswith("APOIO:") & ~df_periodo_coord['produto'].str.startswith("APRENDIZ")].copy()
+                
+                df_prod_coord = df_periodo_coord[~df_periodo_coord['produto'].str.startswith("APOIO:") & ~df_periodo_coord['produto'].str.startswith("APRENDIZ") & ~df_periodo_coord['produto'].str.startswith("ADIANTAMENTO:")].copy()
+                df_adiant_coord = df_periodo_coord[df_periodo_coord['produto'] == "ADIANTAMENTO: Pedidos"].copy()
                 
                 if not df_prod_coord.empty:
                     st.markdown("#### 🏆 Produtividade no Estoque")
@@ -517,6 +490,13 @@ with aba_coordenador:
                     rk_est_c['Eficiência'] = rk_est_c['Eficiência'].fillna(0).map(lambda x: f"{x:.1f}%")
                     rk_est_c['Tempo_Gasto'] = rk_est_c['Tempo_Gasto'].map(lambda x: f"{int(x/60)}h {int(x%60)}m" if x >= 60 else f"{int(x)} min")
                     st.dataframe(rk_est_c[['separador', 'Total_Produtos', 'Tempo_Gasto', 'Eficiência']], hide_index=True, use_container_width=True)
+                
+                if not df_adiant_coord.empty:
+                    st.markdown("#### 🚀 Pedidos Adiantados")
+                    rk_adiant_c = df_adiant_coord.groupby('separador').agg(Total_Pedidos=('quantidade', 'sum'), Tempo_Gasto=('Minutos Gastos Reais', 'sum')).reset_index()
+                    rk_adiant_c['Tempo_Gasto'] = rk_adiant_c['Tempo_Gasto'].map(lambda x: f"{int(x/60)}h {int(x%60)}m" if x >= 60 else f"{int(x)} min")
+                    st.dataframe(rk_adiant_c[['separador', 'Total_Pedidos', 'Tempo_Gasto']], hide_index=True, use_container_width=True)
+
             else:
                 st.warning("Nada aprovado nessas datas.")
 
@@ -540,13 +520,14 @@ with aba_gestor:
             if not df_filtrado.empty:
                 df_filtrado['Minutos Gastos Reais'] = df_filtrado.apply(lambda r: calcular_minutos(r['hora_inicio'], r['hora_fim']), axis=1)
                 
-                df_producao = df_filtrado[~df_filtrado['produto'].str.startswith("APOIO:") & ~df_filtrado['produto'].str.startswith("APRENDIZ")].copy()
+                df_producao = df_filtrado[~df_filtrado['produto'].str.startswith("APOIO:") & ~df_filtrado['produto'].str.startswith("APRENDIZ") & ~df_filtrado['produto'].str.startswith("ADIANTAMENTO:")].copy()
                 df_apoio = df_filtrado[df_filtrado['produto'].str.startswith("APOIO:")].copy()
                 df_aprendiz_dados = df_filtrado[df_filtrado['produto'].str.startswith("APRENDIZ")].copy()
+                df_adiantamento = df_filtrado[df_filtrado['produto'] == "ADIANTAMENTO: Pedidos"].copy()
                 
                 st.markdown("---")
                 st.write(f"### 📈 Resumo Geral do Período")
-                st.write(f"**Produtos Feitos:** {df_producao['quantidade'].sum()} unidades | **Tempo de Apoio:** {int(df_apoio['Minutos Gastos Reais'].sum() / 60)} horas")
+                st.write(f"**Produtos Feitos:** {df_producao['quantidade'].sum()} un | **Pedidos Adiantados:** {df_adiantamento['quantidade'].sum()} pedidos")
                 
                 csv_dados = df_filtrado.to_csv(index=False, sep=';', decimal=',').encode('utf-8-sig')
                 st.download_button(label="📥 Baixar Relatório (Para Excel)", data=csv_dados, file_name="relatorio_estoque.csv", mime="text/csv", type="primary")
@@ -575,6 +556,13 @@ with aba_gestor:
                     rk_apr['Resultado Final'] = rk_apr.apply(lambda r: f"{r['Tempo Formato']} (Fez/Abriu {int(r['Pecas_Feitas'])} un)" if r['Pecas_Feitas'] > 0 else r['Tempo Formato'], axis=1)
                     rk_apr.columns = ['Aprendiz', 'Atividade', 'Minutos', 'Pecas', 'Resultado Final']
                     st.dataframe(rk_apr[['Aprendiz', 'Atividade', 'Resultado Final']], hide_index=True, use_container_width=True)
+                
+                st.subheader("🚀 4. Relatório de Pedidos Adiantados")
+                if not df_adiantamento.empty:
+                    rk_adiant = df_adiantamento.groupby('separador').agg(Total_Pedidos=('quantidade', 'sum'), Tempo_Gasto=('Minutos Gastos Reais', 'sum')).reset_index()
+                    rk_adiant['Tempo_Gasto'] = rk_adiant['Tempo_Gasto'].map(lambda x: f"{int(x/60)}h {int(x%60)}m" if x >= 60 else f"{int(x)} min")
+                    rk_adiant.columns = ['Funcionário', 'Total de Pedidos', 'Tempo Dedicado']
+                    st.dataframe(rk_adiant, hide_index=True, use_container_width=True)
                     
             else: st.warning("Não há dados aprovados neste intervalo de datas.")
             
