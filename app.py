@@ -96,38 +96,215 @@ senhas_separadores = {
     "Renan": "8080"
 }
 
+# MEGA DICIONÁRIO DE INTERAÇÕES (10 de cada)
 mensagens_personalizadas = {
     "Henrique": {
-        "saudacao": ["Já deu aquele trato no Vectra branco hoje? 🚗💨", "Pronto pra acelerar na produção pique Vectra na rodovia? 🛣️", "O Vectra tá brilhando no estacionamento hoje? ✨"],
-        "elogio": ["Acelerando na produção mais que o Vectra na reta! Foguete! 🚀", "Zero a cem em 3 segundos nessa meta! Brabíssimo! 🏎️"]
+        "saudacao": [
+            "Já deu aquele trato no Vectra branco hoje? 🚗💨",
+            "Pronto pra acelerar na produção pique Vectra na rodovia? 🛣️",
+            "O Vectra tá brilhando no estacionamento hoje? ✨",
+            "Bora botar a produção pra andar mais rápido que o Vectra! 🏎️",
+            "Aí sim! Chegou o piloto do Vectra branco! Bora trampar! 🏁",
+            "E aí Henrique, já calibrou os pneus do Vectra hoje? 🚗💨",
+            "O motor do Vectra já tá aquecido pra bater meta? 🔥",
+            "Vectrão branco na pista, sai da frente! Bora! 🏁",
+            "Henrique na área! O Vectra tá no talento hoje? ✨",
+            "Acelera, Henrique! O Vectra não pode parar! 🏎️"
+        ],
+        "elogio": [
+            "Acelerando na produção mais que o Vectra na reta! Foguete! 🚀",
+            "Zero a cem em 3 segundos nessa meta! Brabíssimo! 🏎️",
+            "Pisou fundo agora, hein! 💨",
+            "O Vectra branco passou voando! Boa, Henrique! 🦅",
+            "Com essa velocidade, nem radar pega! Sensacional! 📸",
+            "Cuidado com a multa de velocidade nessa produção, hein! 📸",
+            "Passou a quinta marcha e sumiu! Foguete! 🚀",
+            "Produzindo no estilo Vectra: com classe e velocidade! 🏆",
+            "O motor da fábrica é você, Henrique! Monstro! ⚙️",
+            "Se a Fórmula 1 visse isso, te contratava! Brabo! 🏁"
+        ]
     },
     "Fran": {
-        "saudacao": ["Opa, Catarina na área! Vai rolar aquele sushi caprichado mais tarde? 🍣", "Já separou o shoyu pra hoje, Catarina? 🥢"],
-        "elogio": ["Trabalho fino e de qualidade, igualzinho ao seu sushi, Catarina! 🍣🔥", "Entregou tudo num combo premium! 🍱"]
+        "saudacao": [
+            "Opa, Catarina na área! Vai rolar aquele sushi caprichado mais tarde? 🍣",
+            "Já separou o shoyu pra hoje, Catarina? 🥢",
+            "A melhor sushiman da empresa chegou! 🍱",
+            "Bora produzir com a mesma precisão que você corta um salmão! 🔪🐟",
+            "Preparada pra enrolar essas metas igual temaki? 🍙",
+            "Catarina chegou! O salmão já tá fresco pra hoje? 🍣",
+            "Bora enrolar essas metas com a mesma agilidade dos sushis! 🍱",
+            "Prepara o wasabi que a Catarina chegou com tudo! 🔥",
+            "Sushiman de elite no estoque! Pra cima, Fran! 🥢",
+            "O menu degustação hoje é de metas batidas, Catarina? 🏆"
+        ],
+        "elogio": [
+            "Trabalho fino e de qualidade, igualzinho ao seu sushi, Catarina! 🍣🔥",
+            "Entregou tudo num combo premium! 🍱",
+            "Qualidade nota 10, estilo chef Catarina! 🔪",
+            "Mandou bem demais! Merece até um combinado de salmão hoje! 🍣🏆",
+            "Produção rodando lisinha igual faca de sushiman! Aulas! 🥢",
+            "Produção nota 10, com aquele toque de chef! 👩‍🍳",
+            "Cortou as pendências igual faca afiada! Samurai! 🥷",
+            "Estoque tá igual rodízio: não para de chegar coisa boa! 🍣🚀",
+            "Aí sim, Catarina! Entregando qualidade premium! ⭐",
+            "Até o mestre do sushi ficaria com inveja dessa agilidade! 👏"
+        ]
     },
     "Leonardo": {
-        "saudacao": ["E aí Magrão! O Kadettão vermelho tá brilhando hoje? 🚗🔴", "Pronto pra botar a fábrica pra girar no vermelho, Magrão? 🔴🔥"],
-        "elogio": ["Mais rápido que o Kadett vermelho na descida, Magrão! Voou! 🦅", "Velocidade máxima atingida! Parabéns Magrão! 🏆"]
+        "saudacao": [
+            "E aí Magrão! O Kadettão vermelho tá brilhando hoje? 🚗🔴",
+            "Pronto pra botar a fábrica pra girar no vermelho, Magrão? 🔴🔥",
+            "Deixou o Kadett descansando ou veio acelerando, Magrão? 🏁",
+            "Bora! Produção pedindo aquele motor de Kadett! 🚀",
+            "Aí o Magrão chegou! O terror dos radares com o Kadett vermelho! 🚦",
+            "Fala Magrão! O Kadett tá roncando alto hoje? 🚗💨",
+            "Bora botar o Kadettão na rua e a produção na tela! 🔴",
+            "O asfalto até ferveu quando o Kadett do Magrão chegou! 🔥",
+            "Aperta o cinto que o Magrão chegou pra acelerar! 🏎️",
+            "E aí Magrão! Kadett vermelho no estacionamento é sinal de meta batida! 🏁"
+        ],
+        "elogio": [
+            "Mais rápido que o Kadett vermelho na descida, Magrão! Voou! 🦅",
+            "Velocidade máxima atingida! Parabéns Magrão! 🏆",
+            "O Magrão botou o Kadett na pista e ninguém segura! 🏎️💨",
+            "Fez a curva e bateu a meta! Monstro! 🏁",
+            "Brabo! O Kadett vermelho tem que respeitar essa produção! 🚀",
+            "O Magrão não anda, ele desfila! Amassou na produção! 🏆",
+            "Queimou pneu e deixou a concorrência comendo poeira! 💨",
+            "No estilo Kadett: clássico, rápido e imparável! 🔴🚀",
+            "Aceleração pura, Magrão! Ninguém te alcança hoje! 🦅",
+            "Pisou no acelerador da produtividade! Gênio! 👏"
+        ]
     },
     "Patrick": {
-        "saudacao": ["E as vendas de bolacha, tão rendendo? 🍪💰", "Trouxe pacote de bolacha pra galera hoje, Patrick? 🍪👀"],
-        "elogio": ["Produzindo mais que a fábrica de bolacha inteira! Brabo! 🍪🚀", "Caiu o pix da bolacha e a meta de produção! Aí sim! 💸🔥"]
+        "saudacao": [
+            "E as vendas de bolacha, tão rendendo? 🍪💰",
+            "Trouxe pacote de bolacha pra galera hoje, Patrick? 🍪👀",
+            "O rei da bolacha tá na área! Bora produzir! 👑",
+            "Hoje é dia de faturar no estoque e na bolacha! 💸",
+            "Pique fábrica de bolacha: produção a milhão! 🏭🍪",
+            "Patrick na área! Já garantiu o estoque de bolacha da firma? 🍪",
+            "Bora adoçar o dia com muita produção e venda de bolacha! 💰",
+            "O magnata das bolachas chegou pra dominar o estoque! 👑",
+            "Seja bem-vindo, Patrick! O café com bolacha já tá no esquema? ☕",
+            "Hoje a meta é vender muito e produzir mais ainda! Pra cima! 🚀"
+        ],
+        "elogio": [
+            "Produzindo mais que a fábrica de bolacha inteira! Brabo! 🍪🚀",
+            "Caiu o pix da bolacha e a meta de produção! Aí sim! 💸🔥",
+            "Bolacha crocante e meta batida! Voando, Patrick! 🦅",
+            "O cara é bom de venda e bom de produção! Monstro! 🏆",
+            "Estoque tá cheio igual pacote novo! Mandou bem! 📦",
+            "Empreendedorismo e produção! Esse é o Patrick! 💸",
+            "Mais uma caixa pronta, mais uma bolacha vendida! Sucesso! 🍪🔥",
+            "O cara é um fenômeno nos dois estoques: no nosso e no das bolachas! 📦",
+            "Lucro alto e meta batida! Patrick voando! 🦅",
+            "É o CEO do estoque! Parabéns pelo trampo! 🏆"
+        ]
     },
     "Fabiano": {
-        "saudacao": ["Respeita a experiência! (Ou devo dizer Vovô? 👴🏼😂)", "O Vovô chegou! A sabedoria da empresa tá on! 🧠💡"],
-        "elogio": ["Aí sim, Vovô! Mostrando pra garotada como é que se trabalha de verdade! 🏆", "A experiência conta muito! Trabalho impecável, Fabiano! 👏"]
+        "saudacao": [
+            "Respeita a experiência! (Ou devo dizer Vovô? 👴🏼😂)",
+            "O Vovô chegou! A sabedoria da empresa tá on! 🧠💡",
+            "Bora ensinar a garotada como se faz, Fabiano? 📚",
+            "A coluna tá boa pra bater meta hoje, Fabiano? Brincadeira! 😂",
+            "Salve Vovô! Prepara o café forte que hoje tem! ☕",
+            "A lenda viva chegou! Salve, Fabiano! 🏆",
+            "Abre alas pro Vovô que ele vai mostrar como se faz! 👴🏼🚀",
+            "E aí Fabiano! A experiência em pessoa tá na área! 🧠",
+            "Vovô on-line! Prestem atenção nas aulas, pessoal! 📚",
+            "Mostrando serviço e liderando o time! Bora Vovô! 💪"
+        ],
+        "elogio": [
+            "Aí sim, Vovô! Mostrando pra garotada como é que se trabalha de verdade! 🏆",
+            "A experiência conta muito! Trabalho impecável, Fabiano! 👏",
+            "Velha guarda amassando nas metas! Brabo demais! 👴🏼🚀",
+            "Fez parecer fácil! Vovô tem a manha! 🎮",
+            "Aulas de produção com o Fabiano! Os novinhos piram! 📚🔥",
+            "Com essa bagagem toda, a produção até sai mais fácil! 💼",
+            "Vovô tá on fire! O terror da garotada nova! 🔥",
+            "A sabedoria vence a pressa! Trabalho perfeito, Fabiano! 🥇",
+            "Mostrando que panela velha é que faz comida boa! Brabo! 🍲",
+            "Impecável como sempre! Aulas y aulas, Fabiano! 👏"
+        ]
     },
     "Sérgio": {
-        "saudacao": ["Tá sobrando tempo pra treinar as tartarugas hoje, Sérgio? 🐢😂", "As tartarugas já tão ninjas? 🥷🐢"],
-        "elogio": ["Boa! Se treinar tartaruga já dá trabalho, imagina bater essa meta! Sensacional! 🐢🔥", "Ritmo de lebre, nada de tartaruga! Voou, Sérgio! 🦅"]
+        "saudacao": [
+            "Tá sobrando tempo pra treinar as tartarugas hoje, Sérgio? 🐢😂",
+            "As tartarugas já tão ninjas? 🥷🐢",
+            "Acelera aí pra não ficar no ritmo das tartarugas, Sérgio! 🏃‍♂️💨",
+            "E aí mestre Splinter, como tão as tartarugas? 🐢🍕",
+            "Sérgio na área! Bora botar velocidade ninja hoje! ⚡",
+            "Sérgio, as tartarugas comeram muita pizza hoje? 🍕🐢",
+            "Prepara o casco que hoje o dia promete, Mestre! 🥷",
+            "E aí Sérgio! O treinamento ninja hoje é aqui no estoque? ⚔️",
+            "As tartarugas tão na torcida por você hoje! Bora! 🐢🏁",
+            "Salve Sérgio! Cuidado pra não ficar na velocidade do casco hoje, hein! 🏃‍♂️💨"
+        ],
+        "elogio": [
+            "Boa! Se treinar tartaruga já dá trabalho, imagina bater essa meta! Sensacional! 🐢🔥",
+            "Ritmo de lebre, nada de tartaruga! Voou, Sérgio! 🦅",
+            "Mestre das tartarugas e da produção! Parabéns! 🏆",
+            "Ninja demais! Aprovado com sucesso! 🥷",
+            "Tá mais rápido que tartaruga ladeira abaixo! Mandou bem! 🚀",
+            "Movimentos calculados, pura técnica ninja no estoque! 🥷🔥",
+            "As tartarugas tão orgulhosas dessa velocidade toda! 🐢🚀",
+            "Cawabunga, Sérgio! Amassou demais na produção! 🍕🏆",
+            "Ritmo insano, nem o Mestre Splinter te segura! 🐀💨",
+            "Evoluiu da tartaruga pro guepardo! Aí sim! 🐆"
+        ]
     },
     "Marcello": {
-        "saudacao": ["Como você sempre diz: Foco na PRODUÇÃO! 🏭👊", "Chegou o homem que respira PRODUÇÃO! ⚙️"],
-        "elogio": ["PRODUÇÃO a milhão, hein Marcello! Não deixa a peteca cair! 🏭🚀", "Isso sim que é PRODUÇÃO de verdade! Amassou! 👊"]
+        "saudacao": [
+            "Como você sempre diz: Foco na PRODUÇÃO! 🏭👊",
+            "Chegou o homem que respira PRODUÇÃO! ⚙️",
+            "A palavra do dia é: PRODUÇÃO! 🗣️",
+            "Já gritou PRODUÇÃO hoje, Marcello? 📣",
+            "Vamos botar essa PRODUÇÃO pra girar, Marcello! 🔥",
+            "Grita bem alto pra acordar o setor: PRODUUUUÇÃO! 🗣️🏭",
+            "Fala Marcello! O relógio bateu e é hora da PRODUÇÃO! ⏳",
+            "Chegou a força motriz do estoque! Foco total! ⚙️",
+            "O general da PRODUÇÃO tá no comando! Bora! 🚀",
+            "Marcello, o sistema até tremeu quando você digitou a senha! 😂"
+        ],
+        "elogio": [
+            "PRODUÇÃO a milhão, hein Marcello! Não deixa a peteca cair! 🏭🚀",
+            "Isso sim que é PRODUÇÃO de verdade! Amassou! 👊",
+            "Gritou PRODUÇÃO e entregou tudo! Monstro! 🏆",
+            "O cara é a própria máquina de PRODUÇÃO! 🤖",
+            "Meta alcançada em nome da PRODUÇÃO! Parabéns! 🎉",
+            "A empresa inteira ouviu esse envio: PRODUUUÇÃO! 📣🔥",
+            "O Marcello não brinca em serviço! Só entrega pesada! 📦🏆",
+            "Mais um lote que sai com a marca da PRODUÇÃO a milhão! 🏭💨",
+            "Impecável! Você é a definição da palavra PRODUÇÃO! ⭐",
+            "Tá de parabéns! Se todo mundo focasse assim, a gente dobrava a fábrica! 👏"
+        ]
     },
     "Renan": {
-        "saudacao": ["Cuidado pra não prender esse cabelão nas caixas do estoque, hein! 💇‍♂️😂", "E aí cabeludo! Bora botar pra quebrar hoje? 🎸"],
-        "elogio": ["Mandou bem demais! Até jogou o cabelão pro lado pra comemorar! 🎸🔥", "Aprendiz nota mil! Tá ganhando moral, Renan! 🏆"]
+        "saudacao": [
+            "Cuidado pra não prender esse cabelão nas caixas do estoque, hein! 💇‍♂️😂",
+            "E aí cabeludo! Bora botar pra quebrar hoje? 🎸",
+            "Gastou meio pote de shampoo hoje nesse cabelão, Renan? 🧴",
+            "O cabelão tá solto pra voar no estoque hoje? 🦅",
+            "Chegou o aprendiz cabeludo! Bora focar nas metas! 🚀",
+            "Fala Renan! O cabelão já tá amarrado pra não enroscar em nada? 💇‍♂️",
+            "E aí rockstar do estoque! Bora pro palco (fábrica)! 🎸🎤",
+            "Salve Aprendiz! O cabelo longo te dá superpoderes hoje? 🦸‍♂️",
+            "Chegou o Sansão do estoque! Prepara pra produzir! 🦁",
+            "O vento bate no cabelão e ele acelera! Bora Renan! 🌪️"
+        ],
+        "elogio": [
+            "Mandou bem demais! Até jogou o cabelão pro lado pra comemorar! 🎸🔥",
+            "Aprendiz nota mil! Tá ganhando moral, Renan! 🏆",
+            "Voando baixo! O vento até bagunçou o cabelão! 💨",
+            "Estoque dominado pelo cabeludo! Brabo! 🤘",
+            "Ligeiro demais! Continua assim, Renan! 🚀",
+            "É muito talento pra um aprendiz só! E muito cabelo também! 😂🔥",
+            "Esse envio merecia até um solo de guitarra! 🎸⚡",
+            "Tá dominando as caixas como ninguém! Futuro promissor! 🌟",
+            "Voou igual comercial de shampoo! Parabéns Renan! 🧴🚀",
+            "O cabeludo não tá pra brincadeira! Excelente trabalho! 🏆"
+        ]
     }
 }
 
@@ -153,7 +330,6 @@ TR02A  4mm² = 5
 """
 
 produtos_caixas_texto = """
-
 CXP01T = 1
 CXP01 = 1
 CX04S = 1
@@ -178,6 +354,7 @@ Suporte Geral Operacional
 
 atividades_aprendiz_texto = """
 ⚠️ FAZER ESTOQUE (Contar Peças)
+Contagem de Estoque
 Abrir Material para Separadores
 Ajudar nos Pedidos
 Embalar Pedidos
@@ -243,7 +420,12 @@ with aba_separador:
     df_podio = pd.read_sql_query("SELECT separador, quantidade, produto FROM estoque WHERE status = 'Aprovado' AND data = ?", conn, params=(data_hoje_str,))
     
     if not df_podio.empty:
-        df_podio_est = df_podio[~df_podio['produto'].str.startswith("APOIO:") & ~df_podio['produto'].str.startswith("APRENDIZ") & ~df_podio['produto'].str.startswith("ADIANTAMENTO:")]
+        df_podio_est = df_podio[
+            ~df_podio['produto'].str.startswith("APOIO:") & 
+            ~df_podio['produto'].str.startswith("APRENDIZ") & 
+            ~df_podio['produto'].str.startswith("ADIANTAMENTO:") &
+            ~df_podio['produto'].isin(["Contagem de Estoque", "Cortar Cabos", "Testar Torres", "Caixas Plug"])
+        ]
         if not df_podio_est.empty:
             ranking_top3 = df_podio_est.groupby('separador')['quantidade'].sum().reset_index().sort_values('quantidade', ascending=False).head(3)
             if len(ranking_top3) > 0:
@@ -268,14 +450,15 @@ with aba_separador:
         st.success(f"🔓 {obter_bom_dia()}, {nome}! {msg_saudacao}")
         
         setor_do_funcionario = setor_separadores.get(nome, "Todos")
-        lista_opcoes_dinamica = ["Selecione...", "⚠️ ATIVIDADE DE APOIO (Outro Setor)", "📦 ADIANTAR PEDIDOS (Dia Seguinte)"]
+        
+        lista_opcoes_dinamica = ["Selecione...", "⚠️ ATIVIDADE DE APOIO (Outro Setor)", "📦 ADIANTAR PEDIDOS (Dia Seguinte)", "Contagem de Estoque"]
         
         if setor_do_funcionario == "Torres":
-            lista_opcoes_dinamica += list(dicionario_torres.keys())
+            lista_opcoes_dinamica += ["Cortar Cabos", "Testar Torres", "Caixas Plug"] + list(dicionario_torres.keys())
         elif setor_do_funcionario == "Caixas":
             lista_opcoes_dinamica += list(dicionario_caixas.keys())
         else:
-            lista_opcoes_dinamica += list(dicionario_produtos.keys())
+            lista_opcoes_dinamica += ["Cortar Cabos", "Testar Torres", "Caixas Plug"] + list(dicionario_produtos.keys())
             
         produto_selecionado = st.selectbox("O que você fez agora?", lista_opcoes_dinamica, key="sel_prod_main")
         
@@ -287,6 +470,10 @@ with aba_separador:
         elif produto_selecionado == "📦 ADIANTAR PEDIDOS (Dia Seguinte)":
             quantidade = st.number_input("Quantos pedidos você adiantou?", min_value=1, step=1, key="num_qtd_adiant")
             st.info("💡 Sensacional! Registra o horário certinho que você passou adiantando esses pedidos.")
+            
+        elif produto_selecionado in ["Contagem de Estoque", "Cortar Cabos", "Testar Torres", "Caixas Plug"]:
+            quantidade = 0
+            st.info(f"💡 Você selecionou a atividade administrativa: **{produto_selecionado}**. Foque em colocar o horário de início e fim corretos.")
             
         else:
             quantidade = st.number_input("Quantidade (Unidades):", min_value=1, step=1, key="num_qtd_main")
@@ -376,12 +563,17 @@ with aba_aprendiz:
         elif tarefa_apr == "Abrir Material para Separadores":
             prod_apr = st.selectbox("Que material você abriu?", lista_materiais_abrir, key="mat_apr_abrir")
             qtd_apr = st.number_input("Quantidade (un/caixas):", min_value=1, step=1, key="qtd_apr_abrir")
+            
+        elif tarefa_apr == "Contagem de Estoque":
+            prod_apr = "Contagem de Estoque"
+            qtd_apr = 0
+            st.info("💡 Você marcou Contagem de Estoque. Registre a hora de início e fim normalmente.")
         else:
             prod_apr = tarefa_apr
             
         col_apr1, col_apr2 = st.columns(2)
-        with col_apr1: hora_ini_apr = st.text_input("Hora que começou:", placeholder="Ex: 0800", key="ini_apr")
-        with col_apr2: hora_fim_apr = st.text_input("Hora que terminou:", placeholder="Ex: 1200", key="fim_apr")
+        with col_apr1: hora_ini_apr = text_input_hora_ini = st.text_input("Hora que começou:", placeholder="Ex: 0800", key="ini_apr")
+        with col_apr2: hora_fim_apr = text_input_hora_fim = st.text_input("Hora que terminou:", placeholder="Ex: 1200", key="fim_apr")
         
         if st.button("🚀 Enviar pro Coordenador", use_container_width=True, key="btn_apr"):
             if (tarefa_apr in ["⚠️ FAZER ESTOQUE (Contar Peças)", "Abrir Material para Separadores"] and prod_apr == "Selecione...") or not hora_ini_apr or not hora_fim_apr:
@@ -396,6 +588,8 @@ with aba_aprendiz:
                         produto_salvar_apr = f"APRENDIZ ESTOQUE: {prod_apr}"
                     elif tarefa_apr == "Abrir Material para Separadores":
                         produto_salvar_apr = f"APRENDIZ ABRIR: {prod_apr}"
+                    elif tarefa_apr == "Contagem de Estoque":
+                        produto_salvar_apr = "APRENDIZ: Contagem de Estoque"
                     else:
                         produto_salvar_apr = f"APRENDIZ: {prod_apr}"
                         
@@ -441,6 +635,9 @@ with aba_coordenador:
                 elif row['produto'] == "ADIANTAMENTO: Pedidos":
                     tipo_card = "🚀 ADIANTAR PEDIDOS"
                     txt_prod = f"{row['quantidade']} pedidos adiantados"
+                elif row['produto'] in ["Contagem de Estoque", "Cortar Cabos", "Testar Torres", "Caixas Plug"]:
+                    tipo_card = "⚙️ ATIV. ADMINISTRATIVA"
+                    txt_prod = row['produto']
                 else:
                     tipo_card = "🔔 ESTOQUE SEPARADOR"
                     txt_prod = f"{row['produto']} ({row['quantidade']} un)"
@@ -449,14 +646,13 @@ with aba_coordenador:
                     st.write(f"**Horário:** {row['hora_inicio']} até {row['hora_fim']} | **Data:** {row['data']}")
                     col_ok, col_rej = st.columns(2)
                     with col_ok:
-                        st.write("") # Espaço para alinhar com a caixa de seleção
+                        st.write("") 
                         if st.button(f"✓ Dar OK", key=f"coord_ok_{row['id']}", type="primary", use_container_width=True):
                             cursor = conn.cursor()
                             cursor.execute("UPDATE estoque SET status = 'Aprovado' WHERE id = ?", (row['id'],))
                             conn.commit()
                             st.rerun()
                     with col_rej:
-                        # TRAVA DE SEGURANÇA PARA REJEITAR
                         confirmar_rej = st.checkbox("Confirmar ❌", key=f"chk_rej_{row['id']}")
                         if st.button(f"Rejeitar", key=f"coord_rej_{row['id']}", use_container_width=True, disabled=not confirmar_rej):
                             cursor = conn.cursor()
@@ -478,7 +674,12 @@ with aba_coordenador:
             if not df_periodo_coord.empty:
                 df_periodo_coord['Minutos Gastos Reais'] = df_periodo_coord.apply(lambda r: calcular_minutos(r['hora_inicio'], r['hora_fim']), axis=1)
                 
-                df_prod_coord = df_periodo_coord[~df_periodo_coord['produto'].str.startswith("APOIO:") & ~df_periodo_coord['produto'].str.startswith("APRENDIZ") & ~df_periodo_coord['produto'].str.startswith("ADIANTAMENTO:")].copy()
+                df_prod_coord = df_periodo_coord[
+                    ~df_periodo_coord['produto'].str.startswith("APOIO:") & 
+                    ~df_periodo_coord['produto'].str.startswith("APRENDIZ") & 
+                    ~df_periodo_coord['produto'].str.startswith("ADIANTAMENTO:") &
+                    ~df_periodo_coord['produto'].isin(["Contagem de Estoque", "Cortar Cabos", "Testar Torres", "Caixas Plug"])
+                ].copy()
                 df_adiant_coord = df_periodo_coord[df_periodo_coord['produto'] == "ADIANTAMENTO: Pedidos"].copy()
                 
                 if not df_prod_coord.empty:
@@ -520,10 +721,16 @@ with aba_gestor:
             if not df_filtrado.empty:
                 df_filtrado['Minutos Gastos Reais'] = df_filtrado.apply(lambda r: calcular_minutos(r['hora_inicio'], r['hora_fim']), axis=1)
                 
-                df_producao = df_filtrado[~df_filtrado['produto'].str.startswith("APOIO:") & ~df_filtrado['produto'].str.startswith("APRENDIZ") & ~df_filtrado['produto'].str.startswith("ADIANTAMENTO:")].copy()
+                df_producao = df_filtrado[
+                    ~df_filtrado['produto'].str.startswith("APOIO:") & 
+                    ~df_filtrado['produto'].str.startswith("APRENDIZ") & 
+                    ~df_filtrado['produto'].str.startswith("ADIANTAMENTO:") &
+                    ~df_filtrado['produto'].isin(["Contagem de Estoque", "Cortar Cabos", "Testar Torres", "Caixas Plug"])
+                ].copy()
                 df_apoio = df_filtrado[df_filtrado['produto'].str.startswith("APOIO:")].copy()
                 df_aprendiz_dados = df_filtrado[df_filtrado['produto'].str.startswith("APRENDIZ")].copy()
                 df_adiantamento = df_filtrado[df_filtrado['produto'] == "ADIANTAMENTO: Pedidos"].copy()
+                df_admin_seps = df_filtrado[df_filtrado['produto'].isin(["Contagem de Estoque", "Cortar Cabos", "Testar Torres", "Caixas Plug"])].copy()
                 
                 st.markdown("---")
                 st.write(f"### 📈 Resumo Geral do Período")
@@ -550,7 +757,6 @@ with aba_gestor:
                 
                 st.subheader("👦 3. Relatório do Menor Aprendiz")
                 if not df_aprendiz_dados.empty:
-                    # CORREÇÃO APLICADA AQUI NO RELATÓRIO DO APRENDIZ
                     df_aprendiz_dados['Atividade Mapeada'] = df_aprendiz_dados['produto'].str.replace("APRENDIZ ESTOQUE: ", "Estoque: ").str.replace("APRENDIZ ABRIR: ", "Abriu Material: ").str.replace("APRENDIZ: ", "")
                     rk_apr = df_aprendiz_dados.groupby(['separador', 'Atividade Mapeada']).agg(Tempo_Gasto=('Minutos Gastos Reais', 'sum'), Pecas_Feitas=('quantidade', 'sum')).reset_index()
                     rk_apr['Tempo Formato'] = rk_apr['Tempo_Gasto'].map(lambda x: f"{int(x/60)}h {int(x%60)}m" if x >= 60 else f"{int(x)} min")
@@ -558,6 +764,8 @@ with aba_gestor:
                     
                     rk_apr = rk_apr.rename(columns={'separador': 'Aprendiz', 'Atividade Mapeada': 'Atividade'})
                     st.dataframe(rk_apr[['Aprendiz', 'Atividade', 'Resultado Final']], hide_index=True, use_container_width=True)
+                else:
+                    st.info("Nenhuma atividade de menor aprendiz registrada no período.")
                 
                 st.subheader("🚀 4. Relatório de Pedidos Adiantados")
                 if not df_adiantamento.empty:
@@ -565,6 +773,13 @@ with aba_gestor:
                     rk_adiant['Tempo_Gasto'] = rk_adiant['Tempo_Gasto'].map(lambda x: f"{int(x/60)}h {int(x%60)}m" if x >= 60 else f"{int(x)} min")
                     rk_adiant.columns = ['Funcionário', 'Total de Pedidos', 'Tempo Dedicado']
                     st.dataframe(rk_adiant, hide_index=True, use_container_width=True)
+                
+                st.subheader("⚙️ 5. Relatório de Atividades Administrativas e de Setor")
+                if not df_admin_seps.empty:
+                    rk_admin = df_admin_seps.groupby(['separador', 'produto']).agg(Tempo_Gasto=('Minutos Gastos Reais', 'sum')).reset_index()
+                    rk_admin['Tempo Formato'] = rk_admin['Tempo_Gasto'].map(lambda x: f"{int(x/60)}h {int(x%60)}m" if x >= 60 else f"{int(x)} min")
+                    rk_admin.columns = ['Funcionário', 'Atividade', 'Minutos', 'Tempo Dedicado']
+                    st.dataframe(rk_admin[['Funcionário', 'Atividade', 'Tempo Dedicado']], hide_index=True, use_container_width=True)
                     
             else: st.warning("Não há dados aprovados neste intervalo de datas.")
             
