@@ -154,10 +154,6 @@ TR02A  4mm² = 5
 
 produtos_caixas_texto = """
 
-CX02Q = 1
-CX02RN = 1
-CXW02 = 1
-CP01A = 1
 CXP01T = 1
 CXP01 = 1
 CX04S = 1
@@ -197,7 +193,6 @@ Indução Automática
 Indução Semiautomática
 """
 
-# CORREÇÃO APLICADA AQUI (Voltou o "elif linha.strip()")
 dicionario_torres = {}
 for linha in produtos_torres_texto.strip().split('\n'):
     if '=' in linha:
@@ -454,13 +449,16 @@ with aba_coordenador:
                     st.write(f"**Horário:** {row['hora_inicio']} até {row['hora_fim']} | **Data:** {row['data']}")
                     col_ok, col_rej = st.columns(2)
                     with col_ok:
+                        st.write("") # Espaço para alinhar com a caixa de seleção
                         if st.button(f"✓ Dar OK", key=f"coord_ok_{row['id']}", type="primary", use_container_width=True):
                             cursor = conn.cursor()
                             cursor.execute("UPDATE estoque SET status = 'Aprovado' WHERE id = ?", (row['id'],))
                             conn.commit()
                             st.rerun()
                     with col_rej:
-                        if st.button(f"❌ Rejeitar", key=f"coord_rej_{row['id']}", use_container_width=True):
+                        # TRAVA DE SEGURANÇA PARA REJEITAR
+                        confirmar_rej = st.checkbox("Confirmar ❌", key=f"chk_rej_{row['id']}")
+                        if st.button(f"Rejeitar", key=f"coord_rej_{row['id']}", use_container_width=True, disabled=not confirmar_rej):
                             cursor = conn.cursor()
                             cursor.execute("DELETE FROM estoque WHERE id = ?", (row['id'],))
                             conn.commit()
@@ -552,11 +550,13 @@ with aba_gestor:
                 
                 st.subheader("👦 3. Relatório do Menor Aprendiz")
                 if not df_aprendiz_dados.empty:
+                    # CORREÇÃO APLICADA AQUI NO RELATÓRIO DO APRENDIZ
                     df_aprendiz_dados['Atividade Mapeada'] = df_aprendiz_dados['produto'].str.replace("APRENDIZ ESTOQUE: ", "Estoque: ").str.replace("APRENDIZ ABRIR: ", "Abriu Material: ").str.replace("APRENDIZ: ", "")
                     rk_apr = df_aprendiz_dados.groupby(['separador', 'Atividade Mapeada']).agg(Tempo_Gasto=('Minutos Gastos Reais', 'sum'), Pecas_Feitas=('quantidade', 'sum')).reset_index()
                     rk_apr['Tempo Formato'] = rk_apr['Tempo_Gasto'].map(lambda x: f"{int(x/60)}h {int(x%60)}m" if x >= 60 else f"{int(x)} min")
                     rk_apr['Resultado Final'] = rk_apr.apply(lambda r: f"{r['Tempo Formato']} (Fez/Abriu {int(r['Pecas_Feitas'])} un)" if r['Pecas_Feitas'] > 0 else r['Tempo Formato'], axis=1)
-                    rk_apr.columns = ['Aprendiz', 'Atividade', 'Minutos', 'Pecas', 'Resultado Final']
+                    
+                    rk_apr = rk_apr.rename(columns={'separador': 'Aprendiz', 'Atividade Mapeada': 'Atividade'})
                     st.dataframe(rk_apr[['Aprendiz', 'Atividade', 'Resultado Final']], hide_index=True, use_container_width=True)
                 
                 st.subheader("🚀 4. Relatório de Pedidos Adiantados")
