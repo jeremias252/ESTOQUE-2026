@@ -96,32 +96,32 @@ senhas_separadores = {
     "Renan": "8080"
 }
 
-# MEGA DICIONÁRIO DE INTERAÇÕES (10 de cada)
+# MEGA DICIONÁRIO DE INTERAÇÕES 
 mensagens_personalizadas = {
     "Henrique": {
         "saudacao": [
+            "E aí Henrique! Estacionou o Vectra na vaga hoje ou subiu no canteiro de novo? 🚗🪴",
+            "Cuidado com a calçada na hora de ir embora com o Vectra, hein! 🛑🚙",
+            "Fala piloto! Hoje a rota é pelo asfalto ou por cima do canteiro? 🌿🏎️",
             "Já deu aquele trato no Vectra branco hoje? 🚗💨",
             "Pronto pra acelerar na produção pique Vectra na rodovia? 🛣️",
             "O Vectra tá brilhando no estacionamento hoje? ✨",
             "Bora botar a produção pra andar mais rápido que o Vectra! 🏎️",
             "Aí sim! Chegou o piloto do Vectra branco! Bora trampar! 🏁",
             "E aí Henrique, já calibrou os pneus do Vectra hoje? 🚗💨",
-            "O motor do Vectra já tá aquecido pra bater meta? 🔥",
-            "Vectrão branco na pista, sai da frente! Bora! 🏁",
-            "Henrique na área! O Vectra tá no talento hoje? ✨",
-            "Acelera, Henrique! O Vectra não pode parar! 🏎️"
+            "O motor do Vectra já tá aquecido pra bater meta? 🔥"
         ],
         "elogio": [
+            "Passou por cima da meta igual passa por cima do canteiro! Aí sim! 🚀🪴",
+            "Produção tão rápida que até subiu na calçada! Voou, Henrique! 🚙💨",
+            "Não tem obstáculo pra você! Passa por cima da meta e do canteiro se precisar! 🏆🌿",
             "Acelerando na produção mais que o Vectra na reta! Foguete! 🚀",
             "Zero a cem em 3 segundos nessa meta! Brabíssimo! 🏎️",
             "Pisou fundo agora, hein! 💨",
             "O Vectra branco passou voando! Boa, Henrique! 🦅",
             "Com essa velocidade, nem radar pega! Sensacional! 📸",
-            "Cuidado com a multa de velocidade nessa produção, hein! 📸",
             "Passou a quinta marcha e sumiu! Foguete! 🚀",
-            "Produzindo no estilo Vectra: com classe e velocidade! 🏆",
-            "O motor da fábrica é você, Henrique! Monstro! ⚙️",
-            "Se a Fórmula 1 visse isso, te contratava! Brabo! 🏁"
+            "Produzindo no estilo Vectra: com classe e velocidade! 🏆"
         ]
     },
     "Fran": {
@@ -330,6 +330,7 @@ TR02A  4mm² = 5
 """
 
 produtos_caixas_texto = """
+
 CXP01T = 1
 CXP01 = 1
 CX04S = 1
@@ -572,8 +573,8 @@ with aba_aprendiz:
             prod_apr = tarefa_apr
             
         col_apr1, col_apr2 = st.columns(2)
-        with col_apr1: hora_ini_apr = text_input_hora_ini = st.text_input("Hora que começou:", placeholder="Ex: 0800", key="ini_apr")
-        with col_apr2: hora_fim_apr = text_input_hora_fim = st.text_input("Hora que terminou:", placeholder="Ex: 1200", key="fim_apr")
+        with col_apr1: hora_ini_apr = st.text_input("Hora que começou:", placeholder="Ex: 0800", key="ini_apr")
+        with col_apr2: hora_fim_apr = st.text_input("Hora que terminou:", placeholder="Ex: 1200", key="fim_apr")
         
         if st.button("🚀 Enviar pro Coordenador", use_container_width=True, key="btn_apr"):
             if (tarefa_apr in ["⚠️ FAZER ESTOQUE (Contar Peças)", "Abrir Material para Separadores"] and prod_apr == "Selecione...") or not hora_ini_apr or not hora_fim_apr:
@@ -613,6 +614,22 @@ with aba_coordenador:
     senha_coord = st.text_input("Senha do Coordenador:", type="password", key="senha_coord")
     
     if senha_coord == "1234":
+        
+        # MENSAGEM EXCLUSIVA PARA O COORDENADOR LÍDER
+        mensagens_coordenador = [
+            "Fala, Líder! Bora colocar ordem na casa? 📋👊",
+            "Acesso liberado, Coordenador! A equipe tá voando hoje! 🚀",
+            "Chegou quem dita o ritmo! Vamos aprovar essa produção! 🏆",
+            "Olho no lance, Líder! Bora conferir os números de hoje! 🧐📦",
+            "Bem-vindo, Coordenador! O maestro da operação tá na área! 🎼⚡",
+            "A tropa produziu, agora é com o Líder! Manda bala nas aprovações! ✅",
+            "Fala, Líder! Puxando a frente da operação com maestria! 🦅",
+            "O cara que faz a engrenagem girar chegou! Bom trabalho! ⚙️",
+            "Coordenador on-line! Vamos deixar esse estoque nos trinques! ✨",
+            "Acesso VIP para o Líder da operação! Bora pra cima! 🔥"
+        ]
+        st.success(f"🔓 {obter_bom_dia()}! {random.choice(mensagens_coordenador)}")
+
         st.subheader("📋 Fila de Aprovação")
         df_pendentes = pd.read_sql_query("SELECT * FROM estoque WHERE status = 'Pendente'", conn)
         
