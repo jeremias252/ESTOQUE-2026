@@ -238,6 +238,9 @@ CX02S = 1
 CX03S = 1
 CXEP02 = 1
 CXEP03 = 1
+CP01A = 1
+RE04FN = 1
+RE06FN = 1 
 """
 
 atividades_apoio_texto = """
