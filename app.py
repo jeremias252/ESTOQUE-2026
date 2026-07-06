@@ -1,17 +1,23 @@
 import streamlit as st
 import pandas as pd
-import sqlite3
+import psycopg2
 import re
 import random
 from datetime import datetime, date
 
-# 1. CONFIGURAÇÃO DO BANCO DE DADOS
+# 1. CONFIGURAÇÃO DO BANCO DE DADOS EM NUVEM (NEON)
+# Cole o seu link de conexão do Neon.tech entre as aspas abaixo:
+LINK_BANCO = "postgresql://neondb_owner:npg_MScCPIBw39va@ep-rough-moon-acorfmwb.sa-east-1.aws.neon.tech/neondb?sslmode=require"
+
 def conectar_banco():
-    conn = sqlite3.connect('controle_estoque.db', check_same_thread=False)
+    # Conecta no Postgres em Nuvem
+    conn = psycopg2.connect(LINK_BANCO)
+    conn.autocommit = True
     cursor = conn.cursor()
+    # A linguagem do Postgres usa SERIAL ao invés de AUTOINCREMENT
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS estoque (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             separador TEXT,
             produto TEXT,
             quantidade INTEGER,
@@ -21,7 +27,6 @@ def conectar_banco():
             status TEXT
         )
     ''')
-    conn.commit()
     return conn
 
 conn = conectar_banco()
@@ -96,7 +101,6 @@ senhas_separadores = {
     "Renan": "8080"
 }
 
-# MEGA DICIONÁRIO DE INTERAÇÕES 
 mensagens_personalizadas = {
     "Henrique": {
         "saudacao": [
@@ -330,7 +334,6 @@ TR02A  4mm² = 5
 """
 
 produtos_caixas_texto = """
-
 CXP01T = 1
 CXP01 = 1
 CX04S = 1
@@ -418,7 +421,7 @@ aba_separador, aba_aprendiz, aba_coordenador, aba_gestor = st.tabs(["📲 Separa
 # ----------------- ABA 1: SEPARADOR -----------------
 with aba_separador:
     data_hoje_str = datetime.now().strftime("%d/%m/%Y")
-    df_podio = pd.read_sql_query("SELECT separador, quantidade, produto FROM estoque WHERE status = 'Aprovado' AND data = ?", conn, params=(data_hoje_str,))
+    df_podio = pd.read_sql_query("SELECT separador, quantidade, produto FROM estoque WHERE status = 'Aprovado' AND data = %s", conn, params=(data_hoje_str,))
     
     if not df_podio.empty:
         df_podio_est = df_podio[
@@ -505,9 +508,8 @@ with aba_separador:
                         produto_salvar = produto_selecionado
                         
                     cursor = conn.cursor()
-                    cursor.execute('INSERT INTO estoque (separador, produto, quantidade, hora_inicio, hora_fim, data, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                    cursor.execute('INSERT INTO estoque (separador, produto, quantidade, hora_inicio, hora_fim, data, status) VALUES (%s, %s, %s, %s, %s, %s, %s)',
                                    (nome, produto_salvar, quantidade, inicio_corrigido, fim_corrigido, data_hoje_str, 'Pendente'))
-                    conn.commit()
                     
                     st.toast('Enviado com sucesso! 🚀', icon='✅')
                     st.balloons()
@@ -520,7 +522,7 @@ with aba_separador:
         data_consulta = st.date_input("Escolha o dia:", value=date.today(), key="date_consult_sep", format="DD/MM/YYYY")
         data_cons_str = data_consulta.strftime("%d/%m/%Y")
         
-        df_historico_sep = pd.read_sql_query("SELECT produto, quantidade, status FROM estoque WHERE separador = ? AND data = ?", conn, params=(nome, data_cons_str))
+        df_historico_sep = pd.read_sql_query("SELECT produto, quantidade, status FROM estoque WHERE separador = %s AND data = %s", conn, params=(nome, data_cons_str))
         if df_historico_sep.empty:
             st.info("Nada registrado ainda.")
         else:
@@ -595,9 +597,8 @@ with aba_aprendiz:
                         produto_salvar_apr = f"APRENDIZ: {prod_apr}"
                         
                     cursor = conn.cursor()
-                    cursor.execute('INSERT INTO estoque (separador, produto, quantidade, hora_inicio, hora_fim, data, status) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                    cursor.execute('INSERT INTO estoque (separador, produto, quantidade, hora_inicio, hora_fim, data, status) VALUES (%s, %s, %s, %s, %s, %s, %s)',
                                    (nome_apr, produto_salvar_apr, qtd_apr, ini_corr_apr, fim_corr_apr, data_hoje_str, 'Pendente'))
-                    conn.commit()
                     
                     st.toast('Atividade salva! 🚀', icon='✅')
                     st.balloons()
@@ -614,22 +615,6 @@ with aba_coordenador:
     senha_coord = st.text_input("Senha do Coordenador:", type="password", key="senha_coord")
     
     if senha_coord == "1234":
-        
-        # MENSAGEM EXCLUSIVA PARA O COORDENADOR LÍDER
-        mensagens_coordenador = [
-            "Fala, Líder! Bora colocar ordem na casa? 📋👊",
-            "Acesso liberado, Coordenador! A equipe tá voando hoje! 🚀",
-            "Chegou quem dita o ritmo! Vamos aprovar essa produção! 🏆",
-            "Olho no lance, Líder! Bora conferir os números de hoje! 🧐📦",
-            "Bem-vindo, Coordenador! O maestro da operação tá na área! 🎼⚡",
-            "A tropa produziu, agora é com o Líder! Manda bala nas aprovações! ✅",
-            "Fala, Líder! Puxando a frente da operação com maestria! 🦅",
-            "O cara que faz a engrenagem girar chegou! Bom trabalho! ⚙️",
-            "Coordenador on-line! Vamos deixar esse estoque nos trinques! ✨",
-            "Acesso VIP para o Líder da operação! Bora pra cima! 🔥"
-        ]
-        st.success(f"🔓 {obter_bom_dia()}! {random.choice(mensagens_coordenador)}")
-
         st.subheader("📋 Fila de Aprovação")
         df_pendentes = pd.read_sql_query("SELECT * FROM estoque WHERE status = 'Pendente'", conn)
         
@@ -666,15 +651,13 @@ with aba_coordenador:
                         st.write("") 
                         if st.button(f"✓ Dar OK", key=f"coord_ok_{row['id']}", type="primary", use_container_width=True):
                             cursor = conn.cursor()
-                            cursor.execute("UPDATE estoque SET status = 'Aprovado' WHERE id = ?", (row['id'],))
-                            conn.commit()
+                            cursor.execute("UPDATE estoque SET status = 'Aprovado' WHERE id = %s", (row['id'],))
                             st.rerun()
                     with col_rej:
                         confirmar_rej = st.checkbox("Confirmar ❌", key=f"chk_rej_{row['id']}")
                         if st.button(f"Rejeitar", key=f"coord_rej_{row['id']}", use_container_width=True, disabled=not confirmar_rej):
                             cursor = conn.cursor()
-                            cursor.execute("DELETE FROM estoque WHERE id = ?", (row['id'],))
-                            conn.commit()
+                            cursor.execute("DELETE FROM estoque WHERE id = %s", (row['id'],))
                             st.rerun()
 
         st.markdown("---")
@@ -808,8 +791,7 @@ with aba_gestor:
             confirmacao_individual = st.checkbox(f"Confirmo que desejo apagar permanentemente.", key="chk_ind")
             if st.button("🗑️ APAGAR HISTÓRICO", type="primary", disabled=not confirmacao_individual or separador_para_deletar == "Selecione..."):
                 cursor = conn.cursor()
-                cursor.execute("DELETE FROM estoque WHERE separador = ?", (separador_para_deletar,))
-                conn.commit()
+                cursor.execute("DELETE FROM estoque WHERE separador = %s", (separador_para_deletar,))
                 st.success(f"💥 Limpo com sucesso!")
                 st.rerun()
                 
@@ -818,7 +800,6 @@ with aba_gestor:
             if st.button("🔥 ZERAR TUDO", type="primary", disabled=not confirmacao_total):
                 cursor = conn.cursor()
                 cursor.execute("DELETE FROM estoque")
-                conn.commit()
                 st.success("💥 Banco zerado!")
                 st.rerun()
 
