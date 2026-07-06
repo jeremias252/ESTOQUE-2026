@@ -15,7 +15,6 @@ BACKUP_FILE_NAME = "backup_estoque.db"
 
 # 1. FUNÇÃO MÁGICA: RESTAURAR E GERENCIAR BACKUP NO GITHUB
 def gerenciar_backup_inicial():
-    # Verifica se a senha ghp_ está cadastrada no Streamlit Secrets
     if "GITHUB_TOKEN" not in st.secrets:
         return
         
@@ -23,7 +22,6 @@ def gerenciar_backup_inicial():
     url = f"https://api.github.com/repos/{GITHUB_USER}/{GITHUB_REPO}/contents/{BACKUP_FILE_NAME}"
     headers = {"Authorization": f"token {token}", "Accept": "application/vnd.github.v3+json"}
     
-    # Se o banco local NÃO existe ainda (servidor acabou de acordar limpo)
     if not os.path.exists("controle_estoque.db"):
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
@@ -32,7 +30,6 @@ def gerenciar_backup_inicial():
                 conteudo_bytes = base64.b64decode(conteudo_base64)
                 with open("controle_estoque.db", "wb") as f:
                     f.write(conteudo_bytes)
-                # Força o cache do streamlit a recarregar o banco restaurado
                 st.cache_resource.clear()
             except:
                 pass
@@ -54,7 +51,6 @@ def salvar_backup_no_github():
         conteudo_bytes = f.read()
     conteudo_base64 = base64.b64encode(conteudo_bytes).decode("utf-8")
     
-    # Tenta descobrir o "sha" do arquivo se ele já existia lá para atualizar
     sha = None
     res_get = requests.get(url, headers=headers)
     if res_get.status_code == 200:
@@ -73,7 +69,6 @@ def salvar_backup_no_github():
     else:
         return False
 
-# Roda a restauração automática assim que o aplicativo liga
 gerenciar_backup_inicial()
 
 # 2. CONFIGURAÇÃO DO BANCO DE DADOS LOCAL OTIMIZADO
@@ -225,7 +220,6 @@ TR02A  4mm² = 5
 """
 
 produtos_caixas_texto = """
-
 CXP01T = 1
 CXP01 = 1
 CX04S = 1
@@ -240,7 +234,7 @@ CXEP02 = 1
 CXEP03 = 1
 CP01A = 1
 RE04FN = 1
-RE06FN = 1 
+RE06FN = 1
 """
 
 atividades_apoio_texto = """
@@ -407,6 +401,7 @@ with aba_separador:
                     
                     st.toast('Enviado com sucesso! 🚀', icon='✅')
                     st.balloons()
+                    
                     opcoes_elogio = mensagens_personalizadas.get(nome, {}).get("elogio", ["Atividade enviada com sucesso!"])
                     st.success(f"🎉 **{random.choice(opcoes_elogio)}** (Aguardando OK do coordenador)")
 
@@ -528,32 +523,32 @@ with aba_coordenador:
         with col_c1: data_inicio_coord = st.date_input("Data de Início:", value=date.today(), key="d_ini_coord", format="DD/MM/YYYY")
         with col_c2: data_fim_coord = st.date_input("Data Final:", value=date.today(), key="d_fim_coord", format="DD/MM/YYYY")
         
-        if st.button("🔍 Filtrar Período (Coordenador)"):
-            df_todos_aprovados = pd.read_sql_query("SELECT * FROM estoque WHERE status = 'Aprovado'", conn)
-            if not df_todos_aprovados.empty:
-                df_todos_aprovados['data_calc'] = pd.to_datetime(df_todos_aprovados['data'], format='%d/%m/%Y').dt.date
-                df_periodo_coord = df_todos_aprovados[(df_todos_aprovados['data_calc'] >= data_inicio_coord) & (df_todos_aprovados['data_calc'] <= data_fim_coord)].copy()
+        # O RANKING AGORA É MOSTRADO AUTOMATICAMENTE SEM PRECISAR DE BOTÃO
+        df_todos_aprovados = pd.read_sql_query("SELECT * FROM estoque WHERE status = 'Aprovado'", conn)
+        if not df_todos_aprovados.empty:
+            df_todos_aprovados['data_calc'] = pd.to_datetime(df_todos_aprovados['data'], format='%d/%m/%Y').dt.date
+            df_periodo_coord = df_todos_aprovados[(df_todos_aprovados['data_calc'] >= data_inicio_coord) & (df_todos_aprovados['data_calc'] <= data_fim_coord)].copy()
+            
+            if not df_periodo_coord.empty:
+                df_periodo_coord['Minutos Gastos Reais'] = df_periodo_coord.apply(lambda r: calcular_minutos(r['hora_inicio'], r['hora_fim']), axis=1)
+                df_prod_coord = df_periodo_coord[~df_periodo_coord['produto'].str.startswith("APOIO:") & ~df_periodo_coord['produto'].str.startswith("APRENDIZ") & ~df_periodo_coord['produto'].str.startswith("ADIANTAMENTO:") & ~df_periodo_coord['produto'].isin(["Contagem de Estoque", "Cortar Cabos", "Testar Torres", "Caixas Plug"])].copy()
+                df_adiant_coord = df_periodo_coord[df_periodo_coord['produto'] == "ADIANTAMENTO: Pedidos"].copy()
                 
-                if not df_periodo_coord.empty:
-                    df_periodo_coord['Minutos Gastos Reais'] = df_periodo_coord.apply(lambda r: calcular_minutos(r['hora_inicio'], r['hora_fim']), axis=1)
-                    df_prod_coord = df_periodo_coord[~df_periodo_coord['produto'].str.startswith("APOIO:") & ~df_periodo_coord['produto'].str.startswith("APRENDIZ") & ~df_periodo_coord['produto'].str.startswith("ADIANTAMENTO:") & ~df_periodo_coord['produto'].isin(["Contagem de Estoque", "Cortar Cabos", "Testar Torres", "Caixas Plug"])].copy()
-                    df_adiant_coord = df_periodo_coord[df_periodo_coord['produto'] == "ADIANTAMENTO: Pedidos"].copy()
-                    
-                    if not df_prod_coord.empty:
-                        st.markdown("#### 🏆 Produtividade no Estoque")
-                        df_prod_coord['Tempo Padrão Unidade'] = df_prod_coord['produto'].map(dicionario_produtos).fillna(0)
-                        df_prod_coord['Meta de Tempo Total'] = df_prod_coord['Tempo Padrão Unidade'] * df_prod_coord['quantidade']
-                        rk_est_c = df_prod_coord.groupby('separador').agg(Total_Produtos=('quantidade', 'sum'), Meta_Tempo=('Meta de Tempo Total', 'sum'), Tempo_Gasto=('Minutos Gastos Reais', 'sum')).reset_index()
-                        rk_est_c['Eficiência'] = (rk_est_c['Meta_Tempo'] / rk_est_c['Tempo_Gasto']) * 100
-                        rk_est_c['Eficiência'] = rk_est_c['Eficiência'].fillna(0).map(lambda x: f"{x:.1f}%")
-                        rk_est_c['Tempo_Gasto'] = rk_est_c['Tempo_Gasto'].map(lambda x: f"{int(x/60)}h {int(x%60)}m" if x >= 60 else f"{int(x)} min")
-                        st.dataframe(rk_est_c[['separador', 'Total_Produtos', 'Tempo_Gasto', 'Eficiência']], hide_index=True, use_container_width=True)
-                    if not df_adiant_coord.empty:
-                        st.markdown("#### 🚀 Pedidos Adiantados")
-                        rk_adiant_c = df_adiant_coord.groupby('separador').agg(Total_Pedidos=('quantidade', 'sum'), Tempo_Gasto=('Minutos Gastos Reais', 'sum')).reset_index()
-                        rk_adiant_c['Tempo_Gasto'] = rk_adiant_c['Tempo_Gasto'].map(lambda x: f"{int(x/60)}h {int(x%60)}m" if x >= 60 else f"{int(x)} min")
-                        st.dataframe(rk_adiant_c[['separador', 'Total_Pedidos', 'Tempo_Gasto']], hide_index=True, use_container_width=True)
-                else: st.warning("Nada aprovado nessas datas.")
+                if not df_prod_coord.empty:
+                    st.markdown("#### 🏆 Produtividade no Estoque")
+                    df_prod_coord['Tempo Padrão Unidade'] = df_prod_coord['produto'].map(dicionario_produtos).fillna(0)
+                    df_prod_coord['Meta de Tempo Total'] = df_prod_coord['Tempo Padrão Unidade'] * df_prod_coord['quantidade']
+                    rk_est_c = df_prod_coord.groupby('separador').agg(Total_Produtos=('quantidade', 'sum'), Meta_Tempo=('Meta de Tempo Total', 'sum'), Tempo_Gasto=('Minutos Gastos Reais', 'sum')).reset_index()
+                    rk_est_c['Eficiência'] = (rk_est_c['Meta_Tempo'] / rk_est_c['Tempo_Gasto']) * 100
+                    rk_est_c['Eficiência'] = rk_est_c['Eficiência'].fillna(0).map(lambda x: f"{x:.1f}%")
+                    rk_est_c['Tempo_Gasto'] = rk_est_c['Tempo_Gasto'].map(lambda x: f"{int(x/60)}h {int(x%60)}m" if x >= 60 else f"{int(x)} min")
+                    st.dataframe(rk_est_c[['separador', 'Total_Produtos', 'Tempo_Gasto', 'Eficiência']], hide_index=True, use_container_width=True)
+                if not df_adiant_coord.empty:
+                    st.markdown("#### 🚀 Pedidos Adiantados")
+                    rk_adiant_c = df_adiant_coord.groupby('separador').agg(Total_Pedidos=('quantidade', 'sum'), Tempo_Gasto=('Minutos Gastos Reais', 'sum')).reset_index()
+                    rk_adiant_c['Tempo_Gasto'] = rk_adiant_c['Tempo_Gasto'].map(lambda x: f"{int(x/60)}h {int(x%60)}m" if x >= 60 else f"{int(x)} min")
+                    st.dataframe(rk_adiant_c[['separador', 'Total_Pedidos', 'Tempo_Gasto']], hide_index=True, use_container_width=True)
+            else: st.warning("Nada aprovado nessas datas.")
 
 # ----------------- ABA 3: GESTOR (VOCÊ) -----------------
 with aba_gestor:
@@ -592,7 +587,7 @@ with aba_gestor:
                     
                     st.write(f"### 📈 Resumo Geral: {df_producao['quantidade'].sum()} un feitas | {df_adiantamento['quantidade'].sum()} pedidos adiantados")
                     csv_dados = df_filtrado.to_csv(index=False, sep=';', decimal=',').encode('utf-8-sig')
-                    st.download_button(label="📥 Baixar Relatório Completo (Excel)", data=csv_dados, file_name="relatorio_estoque.csv", mime="text/csv")
+                    st.download_button(label="📥 Baixar Relatório Completo (Excel)", data=csv_dados, file_name="relatorio_estoque.csv", mime="text/csv", type="primary")
                     
                     st.subheader("🏆 1. Ranking de Produtividade")
                     if not df_producao.empty:
