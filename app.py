@@ -410,10 +410,11 @@ with aba_separador:
         data_consulta = st.date_input("Escolha o dia:", value=date.today(), key="date_consult_sep", format="DD/MM/YYYY")
         data_cons_str = data_consulta.strftime("%d/%m/%Y")
         
-        df_historico_sep = pd.read_sql_query("SELECT produto, quantidade, status FROM estoque WHERE separador = ? AND data = ?", conn, params=(nome, data_cons_str))
+        # AGORA MOSTRA HORA DE INÍCIO E FIM PARA O FUNCIONÁRIO
+        df_historico_sep = pd.read_sql_query("SELECT produto AS Atividade, quantidade AS Qtd, hora_inicio AS Início, hora_fim AS Fim, status AS Status FROM estoque WHERE separador = ? AND data = ?", conn, params=(nome, data_cons_str))
         if df_historico_sep.empty: st.info("Nada registrado ainda.")
         else:
-            df_historico_sep['produto'] = df_historico_sep['produto'].str.replace("APOIO: ", "Apoio: ").str.replace("ADIANTAMENTO: ", "Adiantou: ")
+            df_historico_sep['Atividade'] = df_historico_sep['Atividade'].str.replace("APOIO: ", "Apoio: ").str.replace("ADIANTAMENTO: ", "Adiantou: ")
             st.dataframe(df_historico_sep, hide_index=True, use_container_width=True)
             
     elif senha_digitada != "": st.error("❌ Senha errada!")
@@ -481,7 +482,6 @@ with aba_coordenador:
     
     if senha_coord == "1234":
         
-        # NOVO: VISÃO DIRETA DO DIA INTEIRO
         st.subheader("👀 O que a equipe fez hoje")
         data_hoje_str = datetime.now().strftime("%d/%m/%Y")
         df_hoje = pd.read_sql_query("SELECT separador AS Funcionário, produto AS Atividade, quantidade AS Qtd, hora_inicio AS Início, hora_fim AS Fim, status AS Status FROM estoque WHERE data = ?", conn, params=(data_hoje_str,))
@@ -529,12 +529,11 @@ with aba_coordenador:
                             st.rerun()
 
         st.markdown("---")
-        st.subheader("📅 Desempenho e Rankings")
+        st.subheader("📅 Desempenho e Rankings (Aprovados)")
         col_c1, col_c2 = st.columns(2)
         with col_c1: data_inicio_coord = st.date_input("Data de Início:", value=date.today(), key="d_ini_coord", format="DD/MM/YYYY")
         with col_c2: data_fim_coord = st.date_input("Data Final:", value=date.today(), key="d_fim_coord", format="DD/MM/YYYY")
         
-        # O RANKING É MOSTRADO AUTOMATICAMENTE
         df_todos_aprovados = pd.read_sql_query("SELECT * FROM estoque WHERE status = 'Aprovado'", conn)
         if not df_todos_aprovados.empty:
             df_todos_aprovados['data_calc'] = pd.to_datetime(df_todos_aprovados['data'], format='%d/%m/%Y').dt.date
@@ -542,11 +541,20 @@ with aba_coordenador:
             
             if not df_periodo_coord.empty:
                 df_periodo_coord['Minutos Gastos Reais'] = df_periodo_coord.apply(lambda r: calcular_minutos(r['hora_inicio'], r['hora_fim']), axis=1)
+                
+                # TABELA NOVA: EXTRATO DETALHADO LINHA A LINHA PARA O COORDENADOR
+                st.markdown("#### 📋 Extrato Detalhado (Linha a Linha)")
+                df_detalhado_coord = df_periodo_coord[['data', 'separador', 'produto', 'quantidade', 'hora_inicio', 'hora_fim', 'Minutos Gastos Reais']].copy()
+                df_detalhado_coord['Minutos Gastos Reais'] = df_detalhado_coord['Minutos Gastos Reais'].map(lambda x: f"{int(x/60)}h {int(x%60)}m" if x >= 60 else f"{int(x)} min")
+                df_detalhado_coord.columns = ['Data', 'Funcionário', 'Atividade', 'Qtd', 'Início', 'Fim', 'Tempo Gasto']
+                st.dataframe(df_detalhado_coord, hide_index=True, use_container_width=True)
+
+                # RANKINGS AGRUPADOS
                 df_prod_coord = df_periodo_coord[~df_periodo_coord['produto'].str.startswith("APOIO:") & ~df_periodo_coord['produto'].str.startswith("APRENDIZ") & ~df_periodo_coord['produto'].str.startswith("ADIANTAMENTO:") & ~df_periodo_coord['produto'].isin(["Contagem de Estoque", "Cortar Cabos", "Testar Torres", "Caixas Plug"])].copy()
                 df_adiant_coord = df_periodo_coord[df_periodo_coord['produto'] == "ADIANTAMENTO: Pedidos"].copy()
                 
                 if not df_prod_coord.empty:
-                    st.markdown("#### 🏆 Produtividade no Estoque")
+                    st.markdown("#### 🏆 Produtividade no Estoque (Agrupado)")
                     df_prod_coord['Tempo Padrão Unidade'] = df_prod_coord['produto'].map(dicionario_produtos).fillna(0)
                     df_prod_coord['Meta de Tempo Total'] = df_prod_coord['Tempo Padrão Unidade'] * df_prod_coord['quantidade']
                     rk_est_c = df_prod_coord.groupby('separador').agg(Total_Produtos=('quantidade', 'sum'), Meta_Tempo=('Meta de Tempo Total', 'sum'), Tempo_Gasto=('Minutos Gastos Reais', 'sum')).reset_index()
@@ -555,7 +563,7 @@ with aba_coordenador:
                     rk_est_c['Tempo_Gasto'] = rk_est_c['Tempo_Gasto'].map(lambda x: f"{int(x/60)}h {int(x%60)}m" if x >= 60 else f"{int(x)} min")
                     st.dataframe(rk_est_c[['separador', 'Total_Produtos', 'Tempo_Gasto', 'Eficiência']], hide_index=True, use_container_width=True)
                 if not df_adiant_coord.empty:
-                    st.markdown("#### 🚀 Pedidos Adiantados")
+                    st.markdown("#### 🚀 Pedidos Adiantados (Agrupado)")
                     rk_adiant_c = df_adiant_coord.groupby('separador').agg(Total_Pedidos=('quantidade', 'sum'), Tempo_Gasto=('Minutos Gastos Reais', 'sum')).reset_index()
                     rk_adiant_c['Tempo_Gasto'] = rk_adiant_c['Tempo_Gasto'].map(lambda x: f"{int(x/60)}h {int(x%60)}m" if x >= 60 else f"{int(x)} min")
                     st.dataframe(rk_adiant_c[['separador', 'Total_Pedidos', 'Tempo_Gasto']], hide_index=True, use_container_width=True)
@@ -581,7 +589,6 @@ with aba_gestor:
         with col_d1: data_inicio = st.date_input("Data de Início:", value=date.today(), key="ini_gestor", format="DD/MM/YYYY")
         with col_d2: data_fim = st.date_input("Data Final:", value=date.today(), key="fim_gestor", format="DD/MM/YYYY")
             
-        # OS RELATÓRIOS DO GESTOR AGORA SÃO AUTOMÁTICOS
         df_geral = pd.read_sql_query("SELECT * FROM estoque WHERE status = 'Aprovado'", conn)
         if not df_geral.empty:
             df_geral['data_calc'] = pd.to_datetime(df_geral['data'], format='%d/%m/%Y').dt.date
@@ -589,6 +596,14 @@ with aba_gestor:
             
             if not df_filtrado.empty:
                 df_filtrado['Minutos Gastos Reais'] = df_filtrado.apply(lambda r: calcular_minutos(r['hora_inicio'], r['hora_fim']), axis=1)
+                
+                # TABELA NOVA: EXTRATO DETALHADO LINHA A LINHA PARA O GESTOR
+                st.markdown("#### 📋 Extrato Detalhado do Período (Linha a Linha)")
+                df_detalhado = df_filtrado[['data', 'separador', 'produto', 'quantidade', 'hora_inicio', 'hora_fim', 'Minutos Gastos Reais']].copy()
+                df_detalhado['Minutos Gastos Reais'] = df_detalhado['Minutos Gastos Reais'].map(lambda x: f"{int(x/60)}h {int(x%60)}m" if x >= 60 else f"{int(x)} min")
+                df_detalhado.columns = ['Data', 'Funcionário', 'Atividade', 'Qtd', 'Início', 'Fim', 'Tempo Gasto']
+                st.dataframe(df_detalhado, hide_index=True, use_container_width=True)
+
                 df_producao = df_filtrado[~df_filtrado['produto'].str.startswith("APOIO:") & ~df_filtrado['produto'].str.startswith("APRENDIZ") & ~df_filtrado['produto'].str.startswith("ADIANTAMENTO:") & ~df_filtrado['produto'].isin(["Contagem de Estoque", "Cortar Cabos", "Testar Torres", "Caixas Plug"])].copy()
                 df_apoio = df_filtrado[df_filtrado['produto'].str.startswith("APOIO:")].copy()
                 df_aprendiz_dados = df_filtrado[df_filtrado['produto'].str.startswith("APRENDIZ")].copy()
@@ -599,7 +614,7 @@ with aba_gestor:
                 csv_dados = df_filtrado.to_csv(index=False, sep=';', decimal=',').encode('utf-8-sig')
                 st.download_button(label="📥 Baixar Relatório Completo (Excel)", data=csv_dados, file_name="relatorio_estoque.csv", mime="text/csv", type="primary")
                 
-                st.subheader("🏆 1. Ranking de Produtividade")
+                st.subheader("🏆 1. Ranking de Produtividade (Agrupado)")
                 if not df_producao.empty:
                     df_producao['Tempo Padrão Unidade'] = df_producao['produto'].map(dicionario_produtos).fillna(0)
                     df_producao['Meta de Tempo Total'] = df_producao['Tempo Padrão Unidade'] * df_producao['quantidade']
@@ -609,26 +624,26 @@ with aba_gestor:
                     ranking_est['Tempo_Gasto'] = ranking_est['Tempo_Gasto'].map(lambda x: f"{int(x/60)}h {int(x%60)}m")
                     st.dataframe(ranking_est[['separador', 'Total_Produtos', 'Tempo_Gasto', 'Eficiência Média']], hide_index=True, use_container_width=True)
                 
-                st.subheader("🛠️ 2. Relatório de Apoio")
+                st.subheader("🛠️ 2. Relatório de Apoio (Agrupado)")
                 if not df_apoio.empty:
                     ranking_ap = df_apoio.groupby('separador').agg(Minutos_Apoio=('Minutos Gastos Reais', 'sum')).reset_index()
                     ranking_ap['Tempo Total'] = ranking_ap['Minutos_Apoio'].map(lambda x: f"{int(x/60)}h {int(x%60)}m")
                     st.dataframe(ranking_ap[['separador', 'Tempo Total']], hide_index=True, use_container_width=True)
                 
-                st.subheader("👦 3. Menor Aprendiz")
+                st.subheader("👦 3. Menor Aprendiz (Agrupado)")
                 if not df_aprendiz_dados.empty:
                     df_aprendiz_dados['Atividade'] = df_aprendiz_dados['produto'].str.replace("APRENDIZ ESTOQUE: ", "Estoque: ").str.replace("APRENDIZ ABRIR: ", "Abriu Material: ").str.replace("APRENDIZ: ", "")
                     rk_apr = df_aprendiz_dados.groupby(['separador', 'Atividade']).agg(Tempo_Gasto=('Minutos Gastos Reais', 'sum'), Pecas_Feitas=('quantidade', 'sum')).reset_index()
                     rk_apr['Resultado'] = rk_apr.apply(lambda r: f"{int(r['Tempo_Gasto'])} min (Fez/Abriu {int(r['Pecas_Feitas'])} un)" if r['Pecas_Feitas'] > 0 else f"{int(r['Tempo_Gasto'])} min", axis=1)
                     st.dataframe(rk_apr.rename(columns={'separador':'Aprendiz'})[['Aprendiz', 'Atividade', 'Resultado']], hide_index=True, use_container_width=True)
                 
-                st.subheader("🚀 4. Pedidos Adiantados")
+                st.subheader("🚀 4. Pedidos Adiantados (Agrupado)")
                 if not df_adiantamento.empty:
                     rk_adiant = df_adiantamento.groupby('separador').agg(Total_Pedidos=('quantidade', 'sum'), Tempo_Gasto=('Minutos Gastos Reais', 'sum')).reset_index()
                     rk_adiant['Tempo'] = rk_adiant['Tempo_Gasto'].map(lambda x: f"{int(x/60)}h {int(x%60)}m")
                     st.dataframe(rk_adiant.rename(columns={'separador':'Funcionário'})[['Funcionário', 'Total_Pedidos', 'Tempo']], hide_index=True, use_container_width=True)
                 
-                st.subheader("⚙️ 5. Atividades Administrativas e de Setor")
+                st.subheader("⚙️ 5. Atividades Administrativas e de Setor (Agrupado)")
                 if not df_admin_seps.empty:
                     rk_admin = df_admin_seps.groupby(['separador', 'produto']).agg(Tempo_Gasto=('Minutos Gastos Reais', 'sum')).reset_index()
                     rk_admin['Tempo'] = rk_admin['Tempo_Gasto'].map(lambda x: f"{int(x/60)}h {int(x%60)}m" if x >= 60 else f"{int(x)} min")
