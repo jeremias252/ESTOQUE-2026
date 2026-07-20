@@ -123,7 +123,7 @@ def obter_bom_dia():
     else: return "Boa noite"
 
 # =====================================================================
-# ÁREA DE CONFIGURAÇÃO: PRODUTOS
+# ÁREA DE CONFIGURAÇÃO: PRODUTOS E SETORES
 # =====================================================================
 
 separadores_texto = """
@@ -281,7 +281,7 @@ with aba_separador:
             ~df_podio['produto'].str.startswith("APOIO:") & 
             ~df_podio['produto'].str.startswith("APRENDIZ") & 
             ~df_podio['produto'].str.startswith("ADIANTAMENTO:") &
-            ~df_podio['produto'].str.startswith("PEGO DO ESTOQUE:") &
+            ~df_podio['produto'].str.startswith("PEGUEI DO ESTOQUE:") &
             ~df_podio['produto'].isin(["Contagem de Estoque", "Cortar Cabos", "Testar Torres", "Caixas Plug"])
         ]
         if not df_podio_est.empty:
@@ -306,8 +306,7 @@ with aba_separador:
         st.success(f"🔓 {obter_bom_dia()}, {nome}! Acesso liberado.")
         setor_do_funcionario = setor_separadores.get(nome, "Todos")
         
-        # NOVA OPÇÃO ADICIONADA AQUI: "🛒 PEGAR DO ESTOQUE (Reposição)"
-        lista_opcoes_dinamica = ["Selecione...", "🛒 PEGAR DO ESTOQUE (Reposição)", "⚠️ ATIVIDADE DE APOIO (Outro Setor)", "📦 ADIANTAR PEDIDOS (Dia Seguinte)", "Contagem de Estoque"]
+        lista_opcoes_dinamica = ["Selecione...", "🛒 Peguei do Estoque", "⚠️ ATIVIDADE DE APOIO (Outro Setor)", "📦 ADIANTAR PEDIDOS (Dia Seguinte)", "Contagem de Estoque"]
         
         if setor_do_funcionario == "Torres":
             lista_opcoes_dinamica += ["Cortar Cabos", "Testar Torres", "Caixas Plug"] + list(dicionario_torres.keys())
@@ -318,15 +317,20 @@ with aba_separador:
             
         produto_selecionado = st.selectbox("O que você fez agora?", lista_opcoes_dinamica, key="sel_prod_main")
         
-        # Variáveis padrão
         modelo_pego = "Selecione..."
         hora_inicio = ""
         hora_fim = ""
         quantidade = 0
         
-        # LÓGICA DE EXIBIÇÃO BASEADA NA OPÇÃO
-        if produto_selecionado == "🛒 PEGAR DO ESTOQUE (Reposição)":
-            modelo_pego = st.selectbox("Qual modelo você pegou?", ["Selecione..."] + list(dicionario_produtos.keys()))
+        if produto_selecionado == "🛒 Peguei do Estoque":
+            if setor_do_funcionario == "Torres":
+                lista_itens_estoque = list(dicionario_torres.keys())
+            elif setor_do_funcionario == "Caixas":
+                lista_itens_estoque = list(dicionario_caixas.keys())
+            else:
+                lista_itens_estoque = list(dicionario_produtos.keys())
+                
+            modelo_pego = st.selectbox("Qual modelo você pegou?", ["Selecione..."] + lista_itens_estoque)
             quantidade = st.number_input("Quantidade (Unidades):", min_value=1, step=1, key="num_qtd_estoque")
             st.info("💡 Apenas registre a quantidade. Não é necessário preencher horários para esta ação.")
             hora_inicio = "0000"
@@ -367,7 +371,7 @@ with aba_separador:
         if st.button("🚀 Enviar pro Coordenador", use_container_width=True, key="btn_env_main"):
             if produto_selecionado == "Selecione...":
                 st.error("❌ Selecione uma atividade antes de enviar.")
-            elif produto_selecionado == "🛒 PEGAR DO ESTOQUE (Reposição)" and modelo_pego == "Selecione...":
+            elif produto_selecionado == "🛒 Peguei do Estoque" and modelo_pego == "Selecione...":
                 st.error("❌ Selecione o modelo que você pegou do estoque.")
             elif not hora_inicio or not hora_fim:
                 st.error("❌ Preencha os horários antes de enviar.")
@@ -381,8 +385,8 @@ with aba_separador:
                         produto_salvar = f"APOIO: {tipo_apoio}"
                     elif produto_selecionado == "📦 ADIANTAR PEDIDOS (Dia Seguinte)":
                         produto_salvar = "ADIANTAMENTO: Pedidos"
-                    elif produto_selecionado == "🛒 PEGAR DO ESTOQUE (Reposição)":
-                        produto_salvar = f"PEGO DO ESTOQUE: {modelo_pego}"
+                    elif produto_selecionado == "🛒 Peguei do Estoque":
+                        produto_salvar = f"PEGUEI DO ESTOQUE: {modelo_pego}"
                     else:
                         produto_salvar = produto_selecionado
                         
@@ -402,7 +406,7 @@ with aba_separador:
         df_historico_sep = pd.read_sql_query("SELECT produto AS Atividade, quantidade AS Qtd, hora_inicio AS Início, hora_fim AS Fim, status AS Status FROM estoque WHERE separador = ? AND data = ?", conn, params=(nome, data_cons_str))
         if df_historico_sep.empty: st.info("Nada registrado ainda.")
         else:
-            df_historico_sep['Atividade'] = df_historico_sep['Atividade'].str.replace("APOIO: ", "Apoio: ").str.replace("ADIANTAMENTO: ", "Adiantou: ")
+            df_historico_sep['Atividade'] = df_historico_sep['Atividade'].str.replace("APOIO: ", "Apoio: ").str.replace("ADIANTAMENTO: ", "Adiantou: ").str.replace("PEGUEI DO ESTOQUE: ", "🛒 Pegou: ")
             st.dataframe(df_historico_sep, hide_index=True, use_container_width=True)
             
     elif senha_digitada != "": st.error("❌ Senha errada!")
@@ -468,7 +472,7 @@ with aba_coordenador:
         data_hoje_str = datetime.now().strftime("%d/%m/%Y")
         df_hoje = pd.read_sql_query("SELECT separador AS Funcionário, produto AS Atividade, quantidade AS Qtd, hora_inicio AS Início, hora_fim AS Fim, status AS Status FROM estoque WHERE data = ?", conn, params=(data_hoje_str,))
         if not df_hoje.empty:
-            df_hoje['Atividade'] = df_hoje['Atividade'].str.replace("PEGO DO ESTOQUE: ", "🛒 Reposição: ")
+            df_hoje['Atividade'] = df_hoje['Atividade'].str.replace("PEGUEI DO ESTOQUE: ", "🛒 Pegou do Estoque: ")
             st.dataframe(df_hoje, hide_index=True, use_container_width=True)
         else:
             st.info("Ninguém lançou nada hoje ainda.")
@@ -488,8 +492,8 @@ with aba_coordenador:
                     tipo_card, txt_prod = "👦 TAREFA APRENDIZ", row['produto'].replace("APRENDIZ: ", "")
                 elif row['produto'].startswith("APOIO:"):
                     tipo_card, txt_prod = "🛠️ APOIO SEPARADOR", row['produto'].replace("APOIO: ", "")
-                elif row['produto'].startswith("PEGO DO ESTOQUE:"):
-                    tipo_card, txt_prod = "🛒 REPOSIÇÃO", f"{row['produto'].replace('PEGO DO ESTOQUE: ', '')} ({row['quantidade']} un)"
+                elif row['produto'].startswith("PEGUEI DO ESTOQUE:"):
+                    tipo_card, txt_prod = "🛒 PEGOU DO ESTOQUE", f"{row['produto'].replace('PEGUEI DO ESTOQUE: ', '')} ({row['quantidade']} un)"
                 elif row['produto'] == "ADIANTAMENTO: Pedidos":
                     tipo_card, txt_prod = "🚀 ADIANTAR PEDIDOS", f"{row['quantidade']} pedidos adiantados"
                 elif row['produto'] in ["Contagem de Estoque", "Cortar Cabos", "Testar Torres", "Caixas Plug"]:
@@ -531,18 +535,16 @@ with aba_coordenador:
             if not df_periodo_coord.empty:
                 df_periodo_coord['Minutos Gastos Reais'] = df_periodo_coord.apply(lambda r: calcular_minutos(r['hora_inicio'], r['hora_fim']), axis=1)
                 
-                # EXTRATO DETALHADO LINHA A LINHA PARA O COORDENADOR
                 st.markdown("#### 📋 Extrato Detalhado (Linha a Linha)")
                 df_detalhado_coord = df_periodo_coord[['data', 'separador', 'produto', 'quantidade', 'hora_inicio', 'hora_fim', 'Minutos Gastos Reais']].copy()
                 df_detalhado_coord['Minutos Gastos Reais'] = df_detalhado_coord['Minutos Gastos Reais'].map(lambda x: f"{int(x/60)}h {int(x%60)}m" if x >= 60 else f"{int(x)} min")
-                df_detalhado_coord['produto'] = df_detalhado_coord['produto'].str.replace("PEGO DO ESTOQUE: ", "🛒 Reposição: ")
+                df_detalhado_coord['produto'] = df_detalhado_coord['produto'].str.replace("PEGUEI DO ESTOQUE: ", "🛒 Pegou do Estoque: ")
                 df_detalhado_coord.columns = ['Data', 'Funcionário', 'Atividade', 'Qtd', 'Início', 'Fim', 'Tempo Gasto']
                 st.dataframe(df_detalhado_coord, hide_index=True, use_container_width=True)
 
-                # RANKINGS AGRUPADOS (Exclui Reposição do cálculo de tempo/eficiência)
-                df_prod_coord = df_periodo_coord[~df_periodo_coord['produto'].str.startswith("APOIO:") & ~df_periodo_coord['produto'].str.startswith("APRENDIZ") & ~df_periodo_coord['produto'].str.startswith("ADIANTAMENTO:") & ~df_periodo_coord['produto'].str.startswith("PEGO DO ESTOQUE:") & ~df_periodo_coord['produto'].isin(["Contagem de Estoque", "Cortar Cabos", "Testar Torres", "Caixas Plug"])].copy()
+                df_prod_coord = df_periodo_coord[~df_periodo_coord['produto'].str.startswith("APOIO:") & ~df_periodo_coord['produto'].str.startswith("APRENDIZ") & ~df_periodo_coord['produto'].str.startswith("ADIANTAMENTO:") & ~df_periodo_coord['produto'].str.startswith("PEGUEI DO ESTOQUE:") & ~df_periodo_coord['produto'].isin(["Contagem de Estoque", "Cortar Cabos", "Testar Torres", "Caixas Plug"])].copy()
                 df_adiant_coord = df_periodo_coord[df_periodo_coord['produto'] == "ADIANTAMENTO: Pedidos"].copy()
-                df_pego_estoque = df_periodo_coord[df_periodo_coord['produto'].str.startswith("PEGO DO ESTOQUE:")].copy()
+                df_pego_estoque = df_periodo_coord[df_periodo_coord['produto'].str.startswith("PEGUEI DO ESTOQUE:")].copy()
                 
                 if not df_prod_coord.empty:
                     st.markdown("#### 🏆 Produtividade no Estoque (Agrupado)")
@@ -555,10 +557,10 @@ with aba_coordenador:
                     st.dataframe(rk_est_c[['separador', 'Total_Produtos', 'Tempo_Gasto', 'Eficiência']], hide_index=True, use_container_width=True)
                 
                 if not df_pego_estoque.empty:
-                    st.markdown("#### 🛒 Materiais Pegos do Estoque (Reposição)")
-                    df_pego_estoque['Modelo'] = df_pego_estoque['produto'].str.replace("PEGO DO ESTOQUE: ", "")
+                    st.markdown("#### 🛒 Materiais Pegos do Estoque")
+                    df_pego_estoque['Modelo'] = df_pego_estoque['produto'].str.replace("PEGUEI DO ESTOQUE: ", "")
                     rk_pego = df_pego_estoque.groupby(['separador', 'Modelo'])['quantidade'].sum().reset_index()
-                    rk_pego.columns = ['Funcionário', 'Modelo Reposto', 'Qtd Total']
+                    rk_pego.columns = ['Funcionário', 'Modelo Retirado', 'Qtd Total']
                     st.dataframe(rk_pego, hide_index=True, use_container_width=True)
                 
                 if not df_adiant_coord.empty:
@@ -596,19 +598,18 @@ with aba_gestor:
             if not df_filtrado.empty:
                 df_filtrado['Minutos Gastos Reais'] = df_filtrado.apply(lambda r: calcular_minutos(r['hora_inicio'], r['hora_fim']), axis=1)
                 
-                # TABELA NOVA: EXTRATO DETALHADO LINHA A LINHA PARA O GESTOR
                 st.markdown("#### 📋 Extrato Detalhado do Período (Linha a Linha)")
                 df_detalhado = df_filtrado[['data', 'separador', 'produto', 'quantidade', 'hora_inicio', 'hora_fim', 'Minutos Gastos Reais']].copy()
                 df_detalhado['Minutos Gastos Reais'] = df_detalhado['Minutos Gastos Reais'].map(lambda x: f"{int(x/60)}h {int(x%60)}m" if x >= 60 else f"{int(x)} min")
-                df_detalhado['produto'] = df_detalhado['produto'].str.replace("PEGO DO ESTOQUE: ", "🛒 Reposição: ")
+                df_detalhado['produto'] = df_detalhado['produto'].str.replace("PEGUEI DO ESTOQUE: ", "🛒 Pegou do Estoque: ")
                 df_detalhado.columns = ['Data', 'Funcionário', 'Atividade', 'Qtd', 'Início', 'Fim', 'Tempo Gasto']
                 st.dataframe(df_detalhado, hide_index=True, use_container_width=True)
 
-                df_producao = df_filtrado[~df_filtrado['produto'].str.startswith("APOIO:") & ~df_filtrado['produto'].str.startswith("APRENDIZ") & ~df_filtrado['produto'].str.startswith("ADIANTAMENTO:") & ~df_filtrado['produto'].str.startswith("PEGO DO ESTOQUE:") & ~df_filtrado['produto'].isin(["Contagem de Estoque", "Cortar Cabos", "Testar Torres", "Caixas Plug"])].copy()
+                df_producao = df_filtrado[~df_filtrado['produto'].str.startswith("APOIO:") & ~df_filtrado['produto'].str.startswith("APRENDIZ") & ~df_filtrado['produto'].str.startswith("ADIANTAMENTO:") & ~df_filtrado['produto'].str.startswith("PEGUEI DO ESTOQUE:") & ~df_filtrado['produto'].isin(["Contagem de Estoque", "Cortar Cabos", "Testar Torres", "Caixas Plug"])].copy()
                 df_apoio = df_filtrado[df_filtrado['produto'].str.startswith("APOIO:")].copy()
                 df_aprendiz_dados = df_filtrado[df_filtrado['produto'].str.startswith("APRENDIZ")].copy()
                 df_adiantamento = df_filtrado[df_filtrado['produto'] == "ADIANTAMENTO: Pedidos"].copy()
-                df_pego_estoque = df_filtrado[df_filtrado['produto'].str.startswith("PEGO DO ESTOQUE:")].copy()
+                df_pego_estoque = df_filtrado[df_filtrado['produto'].str.startswith("PEGUEI DO ESTOQUE:")].copy()
                 df_admin_seps = df_filtrado[df_filtrado['produto'].isin(["Contagem de Estoque", "Cortar Cabos", "Testar Torres", "Caixas Plug"])].copy()
                 
                 st.write(f"### 📈 Resumo Geral: {df_producao['quantidade'].sum()} un feitas | {df_adiantamento['quantidade'].sum()} pedidos adiantados")
@@ -625,11 +626,11 @@ with aba_gestor:
                     ranking_est['Tempo_Gasto'] = ranking_est['Tempo_Gasto'].map(lambda x: f"{int(x/60)}h {int(x%60)}m")
                     st.dataframe(ranking_est[['separador', 'Total_Produtos', 'Tempo_Gasto', 'Eficiência Média']], hide_index=True, use_container_width=True)
                 
-                st.subheader("🛒 2. Materiais Pegos do Estoque (Reposição)")
+                st.subheader("🛒 2. Materiais Pegos do Estoque")
                 if not df_pego_estoque.empty:
-                    df_pego_estoque['Modelo'] = df_pego_estoque['produto'].str.replace("PEGO DO ESTOQUE: ", "")
+                    df_pego_estoque['Modelo'] = df_pego_estoque['produto'].str.replace("PEGUEI DO ESTOQUE: ", "")
                     rk_pego = df_pego_estoque.groupby(['separador', 'Modelo'])['quantidade'].sum().reset_index()
-                    rk_pego.columns = ['Funcionário', 'Modelo Reposto', 'Qtd Total']
+                    rk_pego.columns = ['Funcionário', 'Modelo Retirado', 'Qtd Total']
                     st.dataframe(rk_pego, hide_index=True, use_container_width=True)
                 else:
                     st.info("Nenhuma reposição de estoque registrada.")
